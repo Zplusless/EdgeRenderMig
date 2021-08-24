@@ -1,0 +1,270 @@
+{
+  "todo": [
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2020-10-06T10:29:05.573Z",
+      "description": {
+        "content": "记录cpu 内存的资源利用情况",
+        "mime": "text/markdown"
+      },
+      "id": "13",
+      "references": [],
+      "title": "PVE记录VM资源使用情况"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2020-10-05T08:52:38.139Z",
+      "description": {
+        "content": "1. del_tunnel后加入history_tunnel里\n2. add_ue增加对srv种类的控制",
+        "mime": "text/markdown"
+      },
+      "id": "12",
+      "references": [],
+      "title": "scheduler增加功能"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2020-09-28T02:54:44.982Z",
+      "description": {
+        "content": "参考mininet/examples/controllers2.py",
+        "mime": "text/markdown"
+      },
+      "id": "9",
+      "references": [],
+      "title": "改用mininet的中级api构建网络"
+    }
+  ],
+  "in-progress": [
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2021-05-13T09:20:34.546Z",
+      "description": {
+        "content": "在code-server端，ctl_config中增加不同的启动参数",
+        "mime": "text/markdown"
+      },
+      "id": "16",
+      "references": [],
+      "title": "增加容器启动的参数限制"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2021-06-08T07:21:29.165Z",
+      "description": {
+        "content": "同时启动多个ue对应同一个容器时，出现第一个ue的时延更长的现象",
+        "mime": "text/markdown"
+      },
+      "id": "21",
+      "references": [],
+      "title": "第一个启动的UE时延整体比别的UE多40ms"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2021-06-21T12:12:45.868Z",
+      "description": {
+        "content": "debug\n多个server并没有实现负载均衡",
+        "mime": "text/markdown"
+      },
+      "id": "22",
+      "references": [],
+      "title": "container端多个docker容器的问题"
+    }
+  ],
+  "testing": [
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2021-05-21T09:30:57.889Z",
+      "description": {
+        "content": "为了避免dnc在域内无法被central_controller控制,直接将dnc的功能呢挂载到aupf上\n\nnf启动时,非aupf仅启动一个flask app,如果是aupf,则启动两个app\n\naupf添加两个域的路由规则",
+        "mime": "text/markdown"
+      },
+      "id": "19",
+      "references": [],
+      "title": "dnc赋能到aupf"
+    }
+  ],
+  "done": [
+    {
+      "assignedTo": {
+        "name": "Monsterz"
+      },
+      "creation_time": "2021-05-24T08:39:05.193Z",
+      "id": "20",
+      "references": [],
+      "title": "[debug] 在mini5Gedge中，pipe broke"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2020-09-27T07:25:01.142Z",
+      "id": "8",
+      "references": [],
+      "title": "IP网段的重新分配"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2020-09-27T07:15:47.456Z",
+      "description": {
+        "content": "设置网络的时延带宽参数",
+        "mime": "text/markdown"
+      },
+      "id": "7",
+      "references": [],
+      "title": "mininet中link的参数化"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2020-09-24T10:12:56.049Z",
+      "description": {
+        "content": "run里面写一个flask的端口用于调用，输入是ue和目标dn",
+        "mime": "text/markdown"
+      },
+      "id": "3",
+      "references": [],
+      "title": "Tunnel增减通过flask调用"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2021-05-11T14:53:23.214Z",
+      "id": "14",
+      "references": [],
+      "title": "优化项目文件结构，采用主文件+模块的架构"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2021-05-11T14:53:48.087Z",
+      "description": {
+        "content": "同时UE兼容对不同服务的选择，采用srv队列+下标号选取的方式",
+        "mime": "text/markdown"
+      },
+      "id": "15",
+      "references": [],
+      "title": "完成UE端ffmpeg推流的代码嫁接"
+    },
+    {
+      "assignedTo": {
+        "name": "Monsterz"
+      },
+      "creation_time": "2021-05-18T11:18:56.518Z",
+      "description": {
+        "content": "分配port的过程中明显有大约3秒延迟",
+        "mime": "text/markdown"
+      },
+      "id": "17",
+      "references": [],
+      "title": "寻找UE注册过程中时延主要来源"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2020-09-22T07:20:13.412Z",
+      "description": {
+        "content": "将libgtp5gnl的命令行内化为mininet的Node类的功能，通过flash接口提供外部调用",
+        "mime": "text/markdown"
+      },
+      "id": "2",
+      "references": [],
+      "title": "将网元封装成类，并开放对外接口",
+      "details": {
+        "content": "1. 将 gtp-link的创建，添加到Node类的config函数里\n2. add-tunnel函数，增加pdr和far\n3. del-tunnel函数，删除pdr和far\n\n\nrun里的函数自动生成对应的参数，调用对应node的add-tunnel函数--->ip的生成利用baseip和节点的命名规则直接生成\nadd-tunnel的参数只需要ue的ip、dn的cluster id即可",
+        "mime": "text/markdown"
+      }
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2020-09-18T10:59:44.806Z",
+      "description": {
+        "content": "iupf采用旁路由模式的时候可以通。\nran和aupf要采用LinuxRouter类",
+        "mime": "text/markdown"
+      },
+      "id": "1",
+      "references": [],
+      "title": "按照libgtp5gnl中实例，测试ue&ran，dn&aupf在同一个域里的情况",
+      "details": {
+        "content": "iupf采用旁路由模式的时候可以通。\nran和aupf要采用LinuxRouter类",
+        "mime": "text/markdown"
+      }
+    },
+    {
+      "assignedTo": {
+        "name": "Monsterz"
+      },
+      "creation_time": "2021-05-20T02:27:07.722Z",
+      "description": {
+        "content": "理顺return逻辑， 统一使用status code的判定",
+        "mime": "text/markdown"
+      },
+      "id": "18",
+      "references": [],
+      "title": "梳理api调用的返回status code机制"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2020-09-30T02:15:34.583Z",
+      "description": {
+        "content": "控制端：\n从数据集生成负载流--->通知核心网构建gtp隧道\n\n",
+        "mime": "text/markdown"
+      },
+      "id": "10",
+      "references": [],
+      "title": "负载发生器"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2020-09-24T10:13:46.836Z",
+      "description": {
+        "content": "DN端实现负载均衡",
+        "mime": "text/markdown"
+      },
+      "id": "5",
+      "references": [],
+      "title": "负载均衡"
+    },
+    {
+      "assignedTo": {
+        "name": "zplusless"
+      },
+      "creation_time": "2020-09-24T10:13:28.801Z",
+      "description": {
+        "content": "在非CLI场景下能够调用",
+        "mime": "text/markdown"
+      },
+      "id": "4",
+      "references": [],
+      "title": "非CLI阻断机制",
+      "details": {
+        "content": "cli是外部主体，host内自己启动python文件启动flask，作为host里的进程",
+        "mime": "text/markdown"
+      }
+    }
+  ]
+}
