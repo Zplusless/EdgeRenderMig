@@ -5,16 +5,16 @@ sudo cp ./sources.list /etc/apt/sources.list
 
 sudo apt update
 
-sudo apt-get install -y git ssh python3-pip curl net-tools vim
+sudo apt-get install -y git ssh python3-pip curl net-tools vim 
 
 sudo ln -s /usr/bin/python3 /usr/bin/python
-# sudo ln -s /usr/bin/pip3 /usr/bin/pip
+sudo ln -s /usr/bin/pip3 /usr/bin/pip
 
 # # config pip
 # mininet run as root, so only sudo pip works.
 sudo pip install pip -U
 sudo pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-sudo pip install flask requests ffmpeg-python docker numpy
+sudo pip install flask requests ffmpeg-python docker numpy gunicorn
 
 # opencv-python
 sudo apt-get  install -y python3-opencv ffmpeg

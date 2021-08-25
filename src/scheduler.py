@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-from ctr_config import UE_PER_BS, N_BS
 import requests as r
 import time
 
@@ -27,22 +26,6 @@ class Scheduller(object):
         # 启动的container
         self.working_container = {} # 正在工作的container的id集合
 
-    def get_idle_ueid(self, cluster_id:int):
-        for i in range(1, N_BS+1):
-            for j in range(1, UE_PER_BS+1):
-                ue_id = cluster_id*1000000+i*1000+j
-                if ue_id not in self.ue_has_tunnel.keys():
-                    return ue_id
-                else:
-                    if ue_id in self.waiting_del_ue:
-                        ueip = f'100.{cluster_id}.{i}.{j}'
-                        if self.check_waiting_ue(ue_id, ueip):
-                            tunnel_id = self.ue_has_tunnel[ue_id]
-                            self.del_tunnel(tunnel_id)
-                            self.waiting_del_ue.remove(ue_id)
-                            print(f'release tunnel of ue{ue_id}\n\n')
-        
-        raise ValueError('all ue_id have been used')
 
     def check_waiting_ue(self, ue_id, ueip):
         tunnel_id = self.ue_has_tunnel[ue_id]

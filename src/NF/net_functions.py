@@ -102,10 +102,10 @@ class AUPF(NF):
         
         
         # 启动dnc控制, 在AUPF启动，避免dnc不在控制的网段内
-        if config.IN_DEPLOYMENT:
-            self.cmdPrint(f'gunicorn -b 0.0.0.0:8000 start_dnc:dn_app > node_log/{self.name}-dnc.log 2>&1 &')
-        else:
-            self.cmdPrint(f'python start_dnc.py > node_log/{self.name}-dnc.log 2>&1 &')
+        # if config.IN_DEPLOYMENT:
+        #     self.cmdPrint(f'gunicorn -b 0.0.0.0:8000 start_dnc:dn_app > node_log/{self.name}-dnc.log 2>&1 &')
+        # else:
+        #     self.cmdPrint(f'python start_dnc.py > node_log/{self.name}-dnc.log 2>&1 &')
 
         
     def terminate( self ):
