@@ -1,23 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-import threading
-# from multiprocessing import Process
 import time
-import requests as r
-import config
-import csv
-
-import ffmpeg
-import cv2
-import numpy as np
-import socket
-from collections import namedtuple
-
-import os
-
-
-
 
 import logging
 
