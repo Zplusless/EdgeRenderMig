@@ -94,9 +94,9 @@ class Scheduller(object):
         else:
             ue_id = ue
 
-        if ue_id in self.ue_has_tunnel.keys():
-            print('ue_{} is already working, please add another ue'.format(ue_id))
-            return -1
+        # if ue_id in self.ue_has_tunnel.keys():
+        #     print('ue_{} is already working, please add another ue'.format(ue_id))
+        #     return -1
 
         ips = self.get_node_ips(ue_id, dn_cluster_id)
 
