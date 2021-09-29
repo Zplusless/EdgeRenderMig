@@ -28,7 +28,7 @@ class NF( object ):
 
         return cluster, ran, ue_ip
 
-    def getNodeIP(self, ue, dn_cluster_ID):
+    def getNodeIP(self, ue, dn_cluster_ID, sub_ran = 0):
         ue = int(ue.replace('ue',''))
         ue_cluster, ran_id, ue_id = self.get_IDs(ue)
 
@@ -36,7 +36,7 @@ class NF( object ):
         if not dn_cluster_ID:
             return ue_ip
         else:
-            ran_ip = config.BASE_RAN_IUPF_IP.format(ue_cluster,ran_id).split('/')[0]
+            ran_ip = config.BASE_RAN_IUPF_IP.format(ue_cluster,ran_id+sub_ran).split('/')[0]
             iupf_ip = config.BASE_IUPF_WAN_IP.format(ue_cluster).split('/')[0]
             aupf_ip = config.BASE_AUPF_WAN_IP.format(dn_cluster_ID).split('/')[0]
             return {'ue':ue_ip,'ran':ran_ip, 'iupf':iupf_ip, 'aupf':aupf_ip}   
@@ -65,9 +65,9 @@ class RAN(NF):
     def __init__(self, name):
         self.name = name
 
-    def addTunnel(self, ue, dn_cluster_id, tunnel_id):
+    def addTunnel(self, ue, dn_cluster_id, tunnel_id, sub_ran):
 
-        node_ip = self.getNodeIP(ue, dn_cluster_id)
+        node_ip = self.getNodeIP(ue, dn_cluster_id, sub_ran)
 
         up_tunnel_id = tunnel_id*10
         down_tunnel_id = up_tunnel_id + 1
@@ -130,9 +130,9 @@ class IUPF(NF):
     def __init__(self, name):
         self.name = name
 
-    def addTunnel(self, ue, dn_cluster_id, tunnel_id):
+    def addTunnel(self, ue, dn_cluster_id, tunnel_id, sub_ran):
         
-        node_ip=self.getNodeIP(ue, dn_cluster_id)
+        node_ip=self.getNodeIP(ue, dn_cluster_id, sub_ran)
 
         up_tunnel_id = tunnel_id*10
         down_tunnel_id = up_tunnel_id + 1
@@ -178,9 +178,9 @@ class AUPF(NF):
     def __init__(self, name):
         self.name = name
 
-    def addTunnel(self, ue, dn_cluster_id, tunnel_id):
+    def addTunnel(self, ue, dn_cluster_id, tunnel_id, sub_ran):
 
-        node_ip=self.getNodeIP(ue,dn_cluster_id)
+        node_ip=self.getNodeIP(ue,dn_cluster_id,sub_ran)
 
         up_tunnel_id = tunnel_id*10
         down_tunnel_id = up_tunnel_id + 1
