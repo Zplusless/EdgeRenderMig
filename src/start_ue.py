@@ -17,7 +17,9 @@ from flask import Flask, request
 from utils.call_cmd import cmd
 import asyncio
 
-import threading
+import requests
+
+import config
 
 
 
@@ -40,15 +42,31 @@ TEMP = {'client':None}
 def run_client(client):
     asyncio.get_event_loop().run_until_complete(client.game())
 
+# Edge启动snake游戏 && GA
+def start_edge(edge_id):
+    addr = f'http://192.168.1.{edge_id}:8000/run_game/'
+    data = {
+        'name': 'srv_mig',
+        'ip': config.CLOUD_IP,
+        'port': 5500
+    }
 
+    res = requests.post(addr, data = data)
+    return res.status_code
 
 
 
 @ue_app.route('/run_client/<dn_id>/')
 def run_client(dn_id):
-    # dn = request.form.get('dn_id')
-    command = f'cd /home/edge/gaminganywhere-master/bin && ./ga-client config/client.abs.conf rtsp://192.168.1.{dn_id}:8554/desktop'
-    t = cmd(command, True)
+
+    # 让edge端启动
+    res = start_edge(dn_id)
+    if res == 200:
+        # dn = request.form.get('dn_id')
+        command = f'cd /home/edge/gaminganywhere-master/bin && ./ga-client config/client.abs.conf rtsp://192.168.1.{dn_id}:8554/desktop'
+        t = cmd(command, True)
+    else:
+        raise Exception(f'game start failed at Edge-{dn_id}')
 
     return str(t)
 

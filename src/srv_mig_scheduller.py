@@ -10,16 +10,7 @@ import config
 
 s = Scheduller()
 
-# Edge启动snake游戏 && GA
-def start_edge(edge_id):
-    addr = f'http://192.168.1.{edge_id}:8000/run_game/'
-    data = {
-        'name': 'srv_mig',
-        'ip': config.CLOUD_IP,
-        'port': 5500
-    }
 
-    requests.post(addr, data = data)
 
 
 # UE 初始化
@@ -56,20 +47,20 @@ if __name__ == "__main__":
 
 #*==========阶段1================
     # 建立到dn1的隧道
-    # tunnel_1 = s.add_tunnel(1001001, 1, 0)
+    tunnel_1 = s.add_tunnel(1001001, 1, 0)
 
     # dn1启动game和GA
-    start_edge(1)
+    # start_edge(1)
 
-#     # ue接入bs1
-#     init_bs('1')
+    # ue接入bs1
+    init_bs('1')
 
-#     time.sleep(1)
+    time.sleep(1)
 
-#     # UE启动GA客户端，开始接受服务
-#     ue_run_GA(1)
+    # UE启动GA客户端，开始接受服务
+    ue_run_GA(1)
 
-#     time.sleep(10)
+    time.sleep(10)
 
 # #*==========bs切换================
 #     # 建立经过bs_2-1到dn1的隧道
