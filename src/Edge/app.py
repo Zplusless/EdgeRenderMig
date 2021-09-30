@@ -10,12 +10,14 @@ def run_game():
     name = request.form.get('name')
     ip = request.form.get('ip')
     port = request.form.get('port')
+	
+    print(name, ip, port)
 
     # 启动游戏
-    t1 = cmd(f'python ./Snakepygame.py -n {name} -i {ip} -p {port}', True)
+    t1 = cmd(f'python Edge/Snakepygame.py -n {name} -i {ip} -p {port}', False)
 
     # 启动GA
-    t2 = cmd('bash ./start_game.sh', True)
+    # t2 = cmd('bash ./start_game.sh', True)
 
     return 'done'
 
