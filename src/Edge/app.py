@@ -28,9 +28,6 @@ def run_game():
     # 启动游戏
     res, t1 = cmd(f'python Edge/Snakepygame.py -n {name} -i {ip} -p {port} &', False)
 
-    # # 启动GA
-    # # todo 修改配置文件，锁定游戏窗口 https://gaminganywhere.org/doc/quick_start.html
-    # t2 = cmd('bash Edge/start_game.sh &', True)
 
     return 'done'
 
