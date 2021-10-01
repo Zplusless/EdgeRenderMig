@@ -67,7 +67,7 @@ def run_client(dn_id):
 
     # 让edge端启动
     res1 = start_edge_game(dn_id)
-    time.sleep(0.5)
+    time.sleep(2)
     res2 = start_edge_ga(dn_id)
     
     if res1 == 200 and res2 == 200:
@@ -75,7 +75,7 @@ def run_client(dn_id):
         print('start GA client')
         # dn = request.form.get('dn_id')
         command = f'cd /home/edge/gaminganywhere-master/bin && ./ga-client config/client.abs.conf rtsp://192.168.1.{dn_id}:8554/desktop'
-        res, t = cmd(command, True)
+        res, t = cmd(command, False)
     else:
         raise Exception(f'game start failed at Edge-{dn_id}')
 

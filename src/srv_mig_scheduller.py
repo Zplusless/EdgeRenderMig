@@ -72,26 +72,26 @@ if __name__ == "__main__":
     t2 = ue_run_GA(1)
     print(f'start game and GA at ue, done ---> t = {t2}')
 
-    time.sleep(10)
+    time.sleep(5)
 
 # #*==========bs切换================
-#     # 建立经过bs_2-1到dn1的隧道
-#     tunnel_2 = s.add_tunnel(2001001, 1, 0)
+    # # 建立经过bs_2-1到dn1的隧道
+    # tunnel_2 = s.add_tunnel(2001001, 1, 0)
 
-#     # bs切换
-#     switch_bs('2')
+    # # bs切换
+    # # switch_bs('2')
 
-#     time.sleep(3)
+    # time.sleep(3)
 
 # #*==========新session建立================
-#     # 建立经过bs_2-2到dn2的隧道
-#     tunnel_3 = s.add_tunnel(2001001, 2, 1)
+    # 建立经过bs_2-2到dn2的隧道
+    tunnel_3 = s.add_tunnel(2001001, 2, 1)
 
-#     # ue接入bs_2-2
-#     init_bs('2-2')
+    # ue接入bs_2-2
+    init_bs('2-2')
 
-#     # UE启动GA客户端，开始接受服务
-#     ue_run_GA(dn_id=2)
+    # UE启动GA客户端，开始接受服务
+    ue_run_GA(dn_id=2)
 
 # #*==========关闭旧链接================
 #     s.del_tunnel(tunnel_1)

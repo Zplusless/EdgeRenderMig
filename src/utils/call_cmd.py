@@ -35,7 +35,7 @@ def cmd(cmd, record_time:bool):
         t2 = time.time()*1000
         return ans, t2-t1
     else:
-        return None, None
+        return '', -1
 
 
 if __name__ == '__main__':
