@@ -1,13 +1,7 @@
-# 控制逻辑
-1. 控制器只负责：开关容器（resource scheduling），建立gtp隧道（workload dispatching）
-
-2. 容器的开关通过dnc的接口代理实现
-
-3. gtp隧道的建立基于网元控制接口实现
-
-4. 每个UE的请求都默认到192.168.1.252，即dnc节点去请求server的ip和端口，由dnc来负责返回
-
-5. UE根据分配给的ip和端口请求响应的服务
+# Edge配置
+1. 安装gaming-anywhere
+2. 在Edge端拉取本项目，在src路径下启动 `start_dnc.py`
+3. 将Edge/server.snake.conf作为启动GA的配置文件（已经在Edge/start_game.sh中）
 
    
 
@@ -17,6 +11,16 @@
 
    `sudo ip r add 10.0.0.0/8 via 192.168.254`
 
+   或在netplan的配置文件中：
+   ```bash
+      ens38:
+            addresses:
+               - 192.168.1.1/24
+            dhcp4: false
+            routes:
+               - to: 100.0.0.0/8
+               via: 192.168.1.254
+   ```
 
 
 
