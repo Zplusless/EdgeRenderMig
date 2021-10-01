@@ -4,6 +4,18 @@ from utils.call_cmd import cmd
 edge_app = Flask(__name__)
 
 
+
+
+
+#******************************
+# todo GA脚本启动
+#! edge端启动游戏后无法启动GA
+#! 要先启动游戏，再启动GA
+#******************************
+
+
+
+
 @edge_app.route('/run_game/', methods=['POST'])
 def run_game():
 
@@ -14,10 +26,23 @@ def run_game():
     print(name, ip, port)
 
     # 启动游戏
-    t1 = cmd(f'python Edge/Snakepygame.py -n {name} -i {ip} -p {port}', False)
+    res, t1 = cmd(f'python Edge/Snakepygame.py -n {name} -i {ip} -p {port} &', False)
+
+    # # 启动GA
+    # # todo 修改配置文件，锁定游戏窗口 https://gaminganywhere.org/doc/quick_start.html
+    # t2 = cmd('bash Edge/start_game.sh &', True)
+
+    return 'done'
+
+
+
+@edge_app.route('/run_ga/')
+def run_ga():
+
 
     # 启动GA
-    # t2 = cmd('bash ./start_game.sh', True)
+    # todo 修改配置文件，锁定游戏窗口 https://gaminganywhere.org/doc/quick_start.html
+    res, t2 = cmd('bash Edge/start_game.sh &', True)
 
     return 'done'
 

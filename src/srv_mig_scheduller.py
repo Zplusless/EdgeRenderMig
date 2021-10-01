@@ -15,31 +15,41 @@ s = Scheduller()
 
 # UE 初始化
 def init_bs(bs_id):
+
+    print(f'init bs-{bs_id}')
+
     if bs_id not in ['1','2-1','2-2']:
         raise Exception('Wrong bs id')
     addr = f'http://100.1.1.1:6600/init_bs/{bs_id}/'
     t = requests.get(addr)
 
-    return int(t)
+    return float(t.text)
 
 
 # UE 切换
 def switch_bs(bs_id):
+    
+    print(f'switch bs to: {bs_id}')
+
+
     if bs_id not in ['1','2']:
         raise Exception('Wrong bs id')
     addr = f'http://100.1.1.1:6600/switch_bs/{bs_id}/'
     t = requests.get(addr)
 
-    return int(t)
+    return float(t.text)
 
 # UE 启动GA
 def ue_run_GA(dn_id):
+
+    print('calling GA at ue')
+
     if dn_id not in [1,2]:
         raise Exception('Wrong bs id')
     addr = f'http://100.1.1.1:6600/run_client/{dn_id}/'
     t = requests.get(addr)
 
-    return int(t)
+    return float(t.text)
 
 
 
@@ -53,12 +63,14 @@ if __name__ == "__main__":
     # start_edge(1)
 
     # ue接入bs1
-    init_bs('1')
+    t1 = init_bs('1')
+    print(f'init bs 1, done ---> t = {t1}')
 
     time.sleep(1)
 
     # UE启动GA客户端，开始接受服务
-    ue_run_GA(1)
+    t2 = ue_run_GA(1)
+    print(f'start game and GA at ue, done ---> t = {t2}')
 
     time.sleep(10)
 

@@ -33,7 +33,7 @@ def cmd(cmd, record_time:bool):
     if record_time:
         ans,_ = proc.communicate()
         t2 = time.time()*1000
-        return ans, t2 -t1
+        return ans, t2-t1
     else:
         return None, None
 

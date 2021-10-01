@@ -29,8 +29,8 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 ue_app = Flask(__name__)
 
 # 关闭flask的log
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+# log = logging.getLogger('werkzeug')
+# log.setLevel(logging.ERROR)
 
 
 
@@ -43,7 +43,7 @@ def run_client(client):
     asyncio.get_event_loop().run_until_complete(client.game())
 
 # Edge启动snake游戏 && GA
-def start_edge(edge_id):
+def start_edge_game(edge_id):
     addr = f'http://192.168.1.{edge_id}:8000/run_game/'
     data = {
         'name': 'srv_mig',
@@ -55,16 +55,27 @@ def start_edge(edge_id):
     return res.status_code
 
 
+# 启动GA
+def start_edge_ga(edge_id):
+    addr = f'http://192.168.1.{edge_id}:8000/run_ga/'
+    res = requests.get(addr)
+    return res.status_code
+
 
 @ue_app.route('/run_client/<dn_id>/')
 def run_client(dn_id):
 
     # 让edge端启动
-    res = start_edge(dn_id)
-    if res == 200:
+    res1 = start_edge_game(dn_id)
+    time.sleep(0.5)
+    res2 = start_edge_ga(dn_id)
+    
+    if res1 == 200 and res2 == 200:
+        print('start game at edge success!')
+        print('start GA client')
         # dn = request.form.get('dn_id')
         command = f'cd /home/edge/gaminganywhere-master/bin && ./ga-client config/client.abs.conf rtsp://192.168.1.{dn_id}:8554/desktop'
-        t = cmd(command, True)
+        res, t = cmd(command, True)
     else:
         raise Exception(f'game start failed at Edge-{dn_id}')
 
@@ -72,13 +83,13 @@ def run_client(dn_id):
 
 @ue_app.route('/switch_bs/<target_bs>/')
 def switch_bs(target_bs):
-    t = cmd(f'bash UE/route_to_{target_bs}.sh', True)
+    res, t = cmd(f'bash UE/route_to_{target_bs}.sh', True)
 
     return str(t)
 
 @ue_app.route('/init_bs/<bs_id>/')
 def init_bs(bs_id):
-    t = cmd(f'bash UE/route_init_{bs_id}.sh', True)
+    res, t = cmd(f'bash UE/route_init_{bs_id}.sh', True)
 
     return str(t)
 
