@@ -92,7 +92,8 @@ class SrvMigTopo(Topo):
 
         
         ran1 = self.addNode('ran1', cls=RAN,  ip='100.1.1.254/24') # 100.1.1.254
-        ran2 = self.addNode('ran2', cls=RAN,  ip='100.2.1.254/24') # 100.1.2.254
+        ran2_1 = self.addNode('ran2_1', cls=RAN,  ip='100.2.1.254/24') # 100.2.1.254
+        ran2_2 = self.addNode('ran2_2', cls=RAN,  ip='100.2.1.253/24') # 100.2.1.254
 
         ue = self.addNode('ue', cls=UE, ip='100.1.1.1/24')
 
@@ -106,9 +107,18 @@ class SrvMigTopo(Topo):
                                             'loss':config.LOSS_UE_RAN,
                                             'use_htb':True})  # loss算单条连接
 
-        self.addLink(ran2, s1002, intf=TCIntf, 
-                                    intfName1='ran2-eth0', 
+        self.addLink(ran2_1, s1002, intf=TCIntf, 
+                                    intfName1='ran2_1-eth0', 
                                     params1={'ip': '100.2.1.254/24',
+                                            'bw':config.BW_UE_RAN, 
+                                            'delay':config.DELAY_UE_RAN, 
+                                            'loss':config.LOSS_UE_RAN,
+                                            'use_htb':True})  # loss算单条连接
+
+        
+        self.addLink(ran2_2, s1002, intf=TCIntf, 
+                                    intfName1='ran2_2-eth0', 
+                                    params1={'ip': '100.2.1.253/24',
                                             'bw':config.BW_UE_RAN, 
                                             'delay':config.DELAY_UE_RAN, 
                                             'loss':config.LOSS_UE_RAN,
@@ -127,7 +137,7 @@ class SrvMigTopo(Topo):
                                             'use_htb':True})  # loss算单条连接
 
         
-        self.addLink(ran2, s2, intf=TCIntf, 
+        self.addLink(ran2_1, s2, intf=TCIntf, 
                                     intfName1='ran2-eth1', 
                                     addr1=f'00:00:00:00:02:01',
                                     params1={'ip': '172.12.2.1/16',
@@ -136,7 +146,14 @@ class SrvMigTopo(Topo):
                                             'loss':config.LOSS_NF,
                                             'use_htb':True})  # loss算单条连接
 
-
+        self.addLink(ran2_2, s2, intf=TCIntf, 
+                                    intfName1='ran2-eth1', 
+                                    addr1=f'00:00:00:00:02:02',
+                                    params1={'ip': '172.12.2.2/16',
+                                            'bw':config.BW_NF, 
+                                            'delay':config.DELAY_NF, 
+                                            'loss':config.LOSS_NF,
+                                            'use_htb':True})  # loss算单条连接
 
         
 

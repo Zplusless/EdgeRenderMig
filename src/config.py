@@ -5,6 +5,7 @@
 
 IN_DEPLOYMENT = True # True为实际部署，用gunicorn运行；False使用flask自带的webserver
 
+CLOUD_IP = '192.168.50.1'
 
 # =============================================
 RAN_NUM = 2 # topo中有多少个基站

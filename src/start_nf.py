@@ -48,11 +48,11 @@ else:
 
 
 # 对外的http接口
-@nf_app.route('/add_tunnel/<ue>/<int:dn_cluster_id>/<int:tunnel_id>/')
-def add_tunnel(ue, dn_cluster_id, tunnel_id):
+@nf_app.route('/add_tunnel/<ue>/<int:dn_cluster_id>/<int:tunnel_id>/<int:sub_ran>/')
+def add_tunnel(ue, dn_cluster_id, tunnel_id, sub_ran):
     try:
         log.debug(f'start adding tunnel between ue-{ue} and dn_cluster-{dn_cluster_id}')
-        op.addTunnel(ue, dn_cluster_id, tunnel_id)
+        op.addTunnel(ue, dn_cluster_id, tunnel_id, sub_ran)
     except Exception as e:
         log.debug(f'add tunnel for ue-{ue} to cluster-{dn_cluster_id} failed')
         return e, 500

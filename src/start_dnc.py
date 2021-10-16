@@ -1,4 +1,4 @@
-from Edge.ffmpeg_controller.srv_ctl import dn_app
+from Edge.app import edge_app
 
 if __name__ == '__main__':
-    dn_app.run('0.0.0.0', port=8000)
+    edge_app.run('0.0.0.0', port=8000)

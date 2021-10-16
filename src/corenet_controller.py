@@ -65,9 +65,9 @@ class Scheduller(object):
         self.working_container = {}
 
 
-    def get_node_ips(self, ue_id, dn_cluster_id):
+    def get_node_ips(self, ue_id, dn_cluster_id, sub_ran=0): # sub_ran用于一个ue链接两个ran,用于调节ran的ip
         
-        id_ran = ue_id//1000%1000
+        id_ran = ue_id//1000%1000 + sub_ran
         # id_ue = ue_id%1000
         current_cluster = ue_id//1000000
         ran_ip = '172.12.{}.{}'.format(current_cluster, id_ran)
@@ -78,8 +78,8 @@ class Scheduller(object):
             aupf_ip = '172.12.{}.254'.format(dn_cluster_id)
             return ran_ip, iupf_ip, aupf_ip
 
-    def get_ran_ip(self, ue_id):
-        return self.get_node_ips(ue_id, dn_cluster_id=None)
+    def get_ran_ip(self, ue_id, sub_ran=0):
+        return self.get_node_ips(ue_id, dn_cluster_id=None, sub_ran=sub_ran)
 
     def list_tunnel(self):
         print('\n************Working Tunnels**********')
@@ -87,7 +87,7 @@ class Scheduller(object):
             print('No.{}--->from {} to DN_{}'.format(id, tunnel.ue, tunnel.dn_cluster_id))
         print('*************end*********************\n')
 
-    def add_tunnel(self, ue, dn_cluster_id):
+    def add_tunnel(self, ue, dn_cluster_id, sub_ran=0):
         
         if isinstance(ue, str):
             ue_id = int(ue.replace('ue', ''))
@@ -98,10 +98,12 @@ class Scheduller(object):
         #     print('ue_{} is already working, please add another ue'.format(ue_id))
         #     return -1
 
-        ips = self.get_node_ips(ue_id, dn_cluster_id)
+        ips = self.get_node_ips(ue_id, dn_cluster_id, sub_ran)
+
+        print('\nips: ', ips)
 
         for ip in ips:
-            command = BASE_IP.format(ip)+'add_tunnel/{}/{}/{}/'.format(ue, dn_cluster_id, self.next_tunnel_id)
+            command = BASE_IP.format(ip)+'add_tunnel/{}/{}/{}/{}/'.format(ue, dn_cluster_id, self.next_tunnel_id, sub_ran)
             ans = r.get(command, timeout=5)
             if ans.status_code == 200:
                 print(ans.text)
@@ -354,7 +356,9 @@ if __name__ == "__main__":
             elif x ==1:
                 a = str(input('ue:'))
                 b = input('dn_cluster_id:')
-                s.add_tunnel(a,b)
+                c = input('sub_ran:')
+                c = 1 if c else 0
+                s.add_tunnel(a,b, c)
             elif x==2:
                 a = input('tunnel_id to be deleted:')
                 s.del_tunnel(a)

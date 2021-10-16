@@ -64,7 +64,7 @@ class IUPF(NF):
         # Enable forwarding on the router
         # self.cmd( 'sysctl net.ipv4.ip_forward=1' )
         self.cmdPrint( 'sudo gtp5g-link add gtp5gtest &')
-        # self.cmd( 'sleep 0.1')
+        self.cmd( 'sleep 0.1')
         # self.cmdPrint( 'sudo ip r add {} dev gtp5gtest'.format(config.DN_CIDR))
 
         # 启动flask监听
@@ -91,7 +91,7 @@ class AUPF(NF):
         # Enable forwarding on the router
         # self.cmd( 'sysctl net.ipv4.ip_forward=1' )
         self.cmdPrint( 'sudo gtp5g-link add gtp5gtest &')
-        self.cmd( 'sleep 0.1')
+        self.cmd( 'sleep 0.5')
         self.cmdPrint( 'sudo ip r add {} dev gtp5gtest src {}'.format(config.UE_CIDR, config.DN_CONTROLLER_IP.split('/')[0]))
 
         # 启动flask监听
