@@ -72,7 +72,7 @@ git clone git://github.com/mininet/mininet.git
 cd mininet
 
 git checkout -b mininet-2.3.0 2.3.0
-bash ~/mininet/util/install.sh -a
+PYTHON=python3 ~/mininet/util/install.sh -a
 
 
 # git checkout 2.2.2
