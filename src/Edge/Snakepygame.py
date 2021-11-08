@@ -217,7 +217,8 @@ class SnakeClient(object):
         self.PORT = port
         self.color = [(255, 255, 255), (255, 0, 0), (255, 255, 0),
                       (0, 255, 0), (0, 255, 255), (0, 0, 255), (255, 0, 255)]
-
+        
+        self.record_time = False
         self.t1 = None
         self.t2 = None
 
@@ -253,8 +254,10 @@ class SnakeClient(object):
                         id = args[1]
                         if id == self.playerId:
                             self.btnJoin.setEnabled(False)
-                            self.t2 = current_milli_time()
-                            log.info(self.t2-self.t1)
+                            if self.record_time:
+                                self.t2 = current_milli_time()
+                                log.info(self.t2-self.t1)
+                                self.record_time = False
                     elif cmd == "render":
                         x = int(args[1])
                         y = int(args[2])
@@ -305,6 +308,7 @@ class SnakeClient(object):
                     return
                 elif self.btnJoin.handle_event(event):
                     self.t1 = current_milli_time()
+                    self.record_time = True
                     await self.send_msg(websocket, ["join"])
 
                 elif self.btnDisConnect.handle_event(event):
