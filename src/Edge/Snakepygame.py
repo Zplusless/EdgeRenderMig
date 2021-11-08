@@ -19,6 +19,24 @@ clock = pg.time.Clock()
 done = False
 
 
+
+# log
+import time
+import logging
+import socket
+hostname = socket.gethostname()
+current_milli_time = lambda: int(round(time.time() * 1000))
+
+logging.basicConfig(
+    level=logging.DEBUG, 
+    format= f'%(asctime)s - {hostname} - %(message)s', #'%(asctime)s - %(levelname)s - %(message)s',
+    filename='new.log',
+    filemode='a',##模式，有w和a，w就是写模式，每次都会重新写日志，覆盖之前的日志
+    )
+log = logging.getLogger(__name__)
+
+
+
 class InputBox:
     def __init__(self, x, y, w, h, name='', text=''):
         self.rect = pg.Rect(x, y, w, h)
@@ -281,7 +299,10 @@ class SnakeClient(object):
                     await websocket.close()
                     return
                 elif self.btnJoin.handle_event(event):
+                    t1 = current_milli_time()
                     await self.send_msg(websocket, ["join"])
+                    t2 = current_milli_time()
+                    log.info(t2-t1)
                 elif self.btnDisConnect.handle_event(event):
                     done = True
                     await  websocket.close(reason="user exit")
@@ -359,6 +380,8 @@ class SnakeClient(object):
 
 
 if __name__ == '__main__':
+
+    log.warning('\n\n========new experiment==========\n\n')
 
     parser = argparse.ArgumentParser(description='user name, ip, port')
     
