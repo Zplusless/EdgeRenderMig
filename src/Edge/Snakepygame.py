@@ -33,7 +33,7 @@ logging.basicConfig(
     filename='node_log/srvMig.log',
     filemode='a',##模式，有w和a，w就是写模式，每次都会重新写日志，覆盖之前的日志
     )
-log = logging.getLogger(__name__)
+log = logging.getLogger('snake_log')
 
 
 
