@@ -218,6 +218,9 @@ class SnakeClient(object):
         self.color = [(255, 255, 255), (255, 0, 0), (255, 255, 0),
                       (0, 255, 0), (0, 255, 255), (0, 0, 255), (255, 0, 255)]
 
+        self.t1 = None
+        self.t2 = None
+
     async def send_msg(self, websocket, msgList):
         msg = json.dumps(msgList)
         if msg == "exit":
@@ -250,6 +253,8 @@ class SnakeClient(object):
                         id = args[1]
                         if id == self.playerId:
                             self.btnJoin.setEnabled(False)
+                            t2 = current_milli_time()
+                            log.info(self.t2-self.t1)
                     elif cmd == "render":
                         x = int(args[1])
                         y = int(args[2])
@@ -301,8 +306,7 @@ class SnakeClient(object):
                 elif self.btnJoin.handle_event(event):
                     t1 = current_milli_time()
                     await self.send_msg(websocket, ["join"])
-                    t2 = current_milli_time()
-                    log.info(t2-t1)
+
                 elif self.btnDisConnect.handle_event(event):
                     done = True
                     await  websocket.close(reason="user exit")
