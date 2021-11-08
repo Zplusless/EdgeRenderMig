@@ -253,7 +253,7 @@ class SnakeClient(object):
                         id = args[1]
                         if id == self.playerId:
                             self.btnJoin.setEnabled(False)
-                            t2 = current_milli_time()
+                            self.t2 = current_milli_time()
                             log.info(self.t2-self.t1)
                     elif cmd == "render":
                         x = int(args[1])
@@ -304,7 +304,7 @@ class SnakeClient(object):
                     await websocket.close()
                     return
                 elif self.btnJoin.handle_event(event):
-                    t1 = current_milli_time()
+                    self.t1 = current_milli_time()
                     await self.send_msg(websocket, ["join"])
 
                 elif self.btnDisConnect.handle_event(event):
