@@ -30,7 +30,7 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 logging.basicConfig(
     level=logging.DEBUG, 
     format= f'%(asctime)s - {hostname} - %(message)s', #'%(asctime)s - %(levelname)s - %(message)s',
-    filename='new.log',
+    filename='node_log/srvMig.log',
     filemode='a',##模式，有w和a，w就是写模式，每次都会重新写日志，覆盖之前的日志
     )
 log = logging.getLogger(__name__)
