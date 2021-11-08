@@ -25,11 +25,11 @@ import time
 import logging
 import socket
 hostname = socket.gethostname()
-current_milli_time = lambda: int(round(time.time() * 1000))
+current_milli_time = lambda: time.time() * 1000  #lambda: int(round(time.time() * 1000))
 
 logging.basicConfig(
-    level=logging.DEBUG, 
-    format= f'%(asctime)s - {hostname} - %(message)s', #'%(asctime)s - %(levelname)s - %(message)s',
+    level=logging.INFO, 
+    format= f'%(asctime)s - {hostname} - %(levelname)s - %(message)s', #'%(asctime)s - %(levelname)s - %(message)s',
     filename='node_log/srvMig.log',
     filemode='a',##模式，有w和a，w就是写模式，每次都会重新写日志，覆盖之前的日志
     )
