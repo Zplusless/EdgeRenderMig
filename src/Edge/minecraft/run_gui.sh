@@ -1,0 +1,1 @@
+xhost +local:root && podman run -it --rm --env="DISPLAY" --env="QT_X11_NO_MITSHM=1" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" -v ~/minecraft:/tmp/code platpus/javafx java -jar /tmp/code/HMCL-3.3.188.jar
