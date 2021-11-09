@@ -236,7 +236,7 @@ class SnakeClient(object):
             await asyncio.sleep(0.1)
             try:
                 message = await websocket.recv()
-                print(message)
+                # print(message)
                 gs = json.loads(message)
                 if not isinstance(gs[0], list):
                     gs = [gs]
@@ -254,7 +254,7 @@ class SnakeClient(object):
                         id = args[1]
                         if id == self.playerId:
                             self.btnJoin.setEnabled(False)
-                            print(f'\n\n\n\nreceived p_joined')
+                            print(f'\n\n\n\nreceived p_joined---> record_time_flag={self.record_time}')
                             if self.record_time:
                                 self.t2 = current_milli_time()
                                 log.info(self.t2-self.t1)
@@ -375,7 +375,7 @@ class SnakeClient(object):
                 else:
                     item.edge = 1
                     item.setText(temp)
-                    print(temp)
+                    # print(temp)
                     item.setBackground(pg.Color(82, 139, 139))
                     item.setForeground(pg.Color(self.color[color][0], self.color[color][1], self.color[color][2]))
                     # Item.setFont(QFont("Helvetica"))
