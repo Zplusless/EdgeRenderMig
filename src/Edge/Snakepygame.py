@@ -254,10 +254,12 @@ class SnakeClient(object):
                         id = args[1]
                         if id == self.playerId:
                             self.btnJoin.setEnabled(False)
+                            print(f'\n\n\n\nreceived p_joined')
                             if self.record_time:
                                 self.t2 = current_milli_time()
                                 log.info(self.t2-self.t1)
                                 self.record_time = False
+                                print(f'logging at {self.t2}, record_time_flag--->{self.record_time}\n\n\n\n\n')
                     elif cmd == "render":
                         x = int(args[1])
                         y = int(args[2])
@@ -309,6 +311,9 @@ class SnakeClient(object):
                 elif self.btnJoin.handle_event(event):
                     self.t1 = current_milli_time()
                     self.record_time = True
+
+                    print(f'\n\n\n\nclick join button at {self.t1}, record_time_flag--->{self.record_time} \n\n\n\n')
+
                     await self.send_msg(websocket, ["join"])
 
                 elif self.btnDisConnect.handle_event(event):
