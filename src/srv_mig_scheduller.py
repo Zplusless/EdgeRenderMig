@@ -42,7 +42,7 @@ def switch_bs(bs_id):
 # UE 启动GA
 def ue_run_GA(dn_id):
 
-    print('calling GA at ue')
+    print(f'calling GA of edge-{dn_id} at ue')
 
     if dn_id not in [1,2]:
         raise Exception('Wrong bs id')

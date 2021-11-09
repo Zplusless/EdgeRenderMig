@@ -1,7 +1,18 @@
+# 需要修改配置的点
+1. config 下的  
+```python
+CLOUD_IP 
+CLUSTER_INTF
+DN_INTF_1
+DN_INTF_2
+```
+2. 修改Edge/start_game.sh使里面的路径与conf文件匹配
+
 # Edge配置
 1. 安装gaming-anywhere
 2. 在Edge端拉取本项目，在src路径下启动 `start_dnc.py`
-3. 将Edge/server.snake.conf作为启动GA的配置文件（已经在Edge/start_game.sh中）
+3. 将Edge/server.snake.conf拷贝到GA路径下的`bin/config`目录下，作为启动GA的配置文件（已经在Edge/start_game.sh中）
+
 
    
 
