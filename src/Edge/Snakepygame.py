@@ -252,15 +252,8 @@ class SnakeClient(object):
                         self.resetWorld()
                     elif cmd == "p_joined":
                         id = args[1]
-                        print(f'received id={id}, self.id={self.playerId}')
                         if id == self.playerId:
                             self.btnJoin.setEnabled(False)
-                            print(f'\n\n\n\nreceived p_joined---> record_time_flag={self.record_time}')
-                            if self.record_time:
-                                self.t2 = current_milli_time()
-                                log.info(self.t2-self.t1)
-                                self.record_time = False
-                                print(f'logging at {self.t2}, record_time_flag--->{self.record_time}\n\n\n\n\n')
                     elif cmd == "render":
                         x = int(args[1])
                         y = int(args[2])
@@ -285,6 +278,15 @@ class SnakeClient(object):
                         id = args[1]
                         if id == self.playerId:
                             self.btnJoin.setEnabled(True)
+                    elif cmd == "p_join_switch_confirm":
+                        id = args[1]
+                        if id == self.playerId:
+                            print(f'\n\n\n\nreceived p_joined---> record_time_flag={self.record_time}')
+                            if self.record_time:
+                                self.t2 = current_milli_time()
+                                log.info(self.t2-self.t1)
+                                self.record_time = False
+                                print(f'logging at {self.t2}, record_time_flag--->{self.record_time}\n\n\n\n\n')
                     elif cmd == "p_gameover":
                         id = args[1]
                         # remove
