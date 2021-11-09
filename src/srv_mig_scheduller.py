@@ -7,10 +7,25 @@ import time
 from utils.call_cmd import cmd
 from corenet_controller import Scheduller
 import config
+import logging
+import socket
+
+hostname = socket.gethostname()
+current_milli_time = lambda: time.time() * 1000  #lambda: int(round(time.time() * 1000))
+
+
+
+
+logging.basicConfig(
+    level=logging.INFO, 
+    format= f'%(asctime)s - {hostname} - %(levelname)s - %(message)s', #'%(asctime)s - %(levelname)s - %(message)s',
+    filename='node_log/srvMig.log',
+    filemode='a',##模式，有w和a，w就是写模式，每次都会重新写日志，覆盖之前的日志
+    )
+log = logging.getLogger('srvMig_log')
+
 
 s = Scheduller()
-
-
 
 
 # UE 初始化
@@ -84,6 +99,8 @@ if __name__ == "__main__":
     # time.sleep(3)
 
 # #*==========新session建立================
+    
+    t1 = current_milli_time()
     # 建立经过bs_2-2到dn2的隧道
     tunnel_3 = s.add_tunnel(2001001, 2, 1)
 
@@ -92,6 +109,9 @@ if __name__ == "__main__":
 
     # UE启动GA客户端，开始接受服务
     ue_run_GA(dn_id=2)
+    t2 = current_milli_time()
+    log.info('\n\n\n %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+    log.info(t2-t1)
 
 # #*==========关闭旧链接================
 #     s.del_tunnel(tunnel_1)
