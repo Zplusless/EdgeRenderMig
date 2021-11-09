@@ -19,6 +19,24 @@ clock = pg.time.Clock()
 done = False
 
 
+
+# log
+import time
+import logging
+import socket
+hostname = socket.gethostname()
+current_milli_time = lambda: time.time() * 1000  #lambda: int(round(time.time() * 1000))
+
+logging.basicConfig(
+    level=logging.INFO, 
+    format= f'%(asctime)s - {hostname} - %(levelname)s - %(message)s', #'%(asctime)s - %(levelname)s - %(message)s',
+    filename='node_log/srvMig.log',
+    filemode='a',##模式，有w和a，w就是写模式，每次都会重新写日志，覆盖之前的日志
+    )
+log = logging.getLogger('snake_log')
+
+
+
 class InputBox:
     def __init__(self, x, y, w, h, name='', text=''):
         self.rect = pg.Rect(x, y, w, h)
@@ -199,6 +217,10 @@ class SnakeClient(object):
         self.PORT = port
         self.color = [(255, 255, 255), (255, 0, 0), (255, 255, 0),
                       (0, 255, 0), (0, 255, 255), (0, 0, 255), (255, 0, 255)]
+        
+        self.record_time = False
+        self.t1 = None
+        self.t2 = None
 
     async def send_msg(self, websocket, msgList):
         msg = json.dumps(msgList)
@@ -214,7 +236,7 @@ class SnakeClient(object):
             await asyncio.sleep(0.1)
             try:
                 message = await websocket.recv()
-                print(message)
+                # print(message)
                 gs = json.loads(message)
                 if not isinstance(gs[0], list):
                     gs = [gs]
@@ -256,6 +278,15 @@ class SnakeClient(object):
                         id = args[1]
                         if id == self.playerId:
                             self.btnJoin.setEnabled(True)
+                    elif cmd == "p_join_switch_confirm":
+                        id = args[1]
+                        if id == self.playerId:
+                            print(f'\n\n\n\nreceived p_joined---> record_time_flag={self.record_time}')
+                            if self.record_time:
+                                self.t2 = current_milli_time()
+                                log.info(self.t2-self.t1)
+                                self.record_time = False
+                                print(f'logging at {self.t2}, record_time_flag--->{self.record_time}\n\n\n\n\n')
                     elif cmd == "p_gameover":
                         id = args[1]
                         # remove
@@ -281,7 +312,13 @@ class SnakeClient(object):
                     await websocket.close()
                     return
                 elif self.btnJoin.handle_event(event):
+                    self.t1 = current_milli_time()
+                    self.record_time = True
+
+                    print(f'\n\n\n\nclick join button at {self.t1}, record_time_flag--->{self.record_time} \n\n\n\n')
+
                     await self.send_msg(websocket, ["join"])
+
                 elif self.btnDisConnect.handle_event(event):
                     done = True
                     await  websocket.close(reason="user exit")
@@ -341,7 +378,7 @@ class SnakeClient(object):
                 else:
                     item.edge = 1
                     item.setText(temp)
-                    print(temp)
+                    # print(temp)
                     item.setBackground(pg.Color(82, 139, 139))
                     item.setForeground(pg.Color(self.color[color][0], self.color[color][1], self.color[color][2]))
                     # Item.setFont(QFont("Helvetica"))
@@ -359,6 +396,8 @@ class SnakeClient(object):
 
 
 if __name__ == '__main__':
+
+    log.warning('\n\n========new experiment==========\n\n')
 
     parser = argparse.ArgumentParser(description='user name, ip, port')
     
