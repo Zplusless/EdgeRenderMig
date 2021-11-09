@@ -252,6 +252,7 @@ class SnakeClient(object):
                         self.resetWorld()
                     elif cmd == "p_joined":
                         id = args[1]
+                        print(f'received id={id}, self.id={self.playerId}')
                         if id == self.playerId:
                             self.btnJoin.setEnabled(False)
                             print(f'\n\n\n\nreceived p_joined---> record_time_flag={self.record_time}')
