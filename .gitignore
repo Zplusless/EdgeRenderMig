@@ -18,3 +18,5 @@ central_controller/data/*.txt
 mini5Gedge/wireshark_log/
 *.log
 *.pcapng
+.minecraft/
+src/Edge/minecraft/.hmcl.json

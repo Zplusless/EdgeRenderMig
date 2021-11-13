@@ -19,11 +19,11 @@ edge_app = Flask(__name__)
 @edge_app.route('/run_game/', methods=['POST'])
 def run_game():
 
-    name = request.form.get('name')
-    ip = request.form.get('ip')
-    port = request.form.get('port')
+    # name = request.form.get('name')
+    # ip = request.form.get('ip')
+    # port = request.form.get('port')
 	
-    print(name, ip, port)
+    # print(name, ip, port)
 
     # 启动游戏
     res, t1 = cmd(f'cd Edge/minecraft && java -jar HMCL-3.3.188.jar', False)
