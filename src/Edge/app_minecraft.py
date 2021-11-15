@@ -26,7 +26,7 @@ def run_game():
     # print(name, ip, port)
 
     # 启动游戏
-    res, t1 = cmd(f'cd Edge/minecraft && java -jar HMCL-3.3.188.jar', False)
+    res, t1 = cmd(f'cd Edge/minecraft && java -jar HMCL-3.3.188.jar &', False)
 
 
     return 'done'
