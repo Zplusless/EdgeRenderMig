@@ -5,6 +5,7 @@ import requests
 import time
 
 from utils.call_cmd import cmd
+from utils.switch_window import switch_window
 from corenet_controller import Scheduller
 import config
 import logging
@@ -111,8 +112,26 @@ if __name__ == "__main__":
     ue_run_GA(dn_id=2)
     t2 = current_milli_time()
     log.info('\n\n\n %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-    log.info(t2-t1)
+    log.info(f"migration - {t2-t1}")
 
 # #*==========关闭旧链接================
 #     s.del_tunnel(tunnel_1)
 #     s.del_tunnel(tunnel_2)
+
+
+# #*==========切换窗口================
+
+time.sleep(10) # 等待两个窗口都出现
+
+# from utils.switch_window import switch_log
+
+log.warning('\n\n========new experiment==========\n\n')
+
+for i in range(30):
+    print('switch')
+    ts1 = current_milli_time()
+    switch_window()
+    ts2 = current_milli_time()
+    log.info(f"switch - {ts2-ts1}")
+    time.sleep(2)
+    print('done\n')

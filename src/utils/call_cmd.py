@@ -28,6 +28,7 @@ def cmd(cmd, record_time:bool):
         target = PIPE
     else:
         target = None
+    print(f'CMD:  {cmd}')
     proc = Popen(cmd, bufsize=-1, stdout=target, stderr=target, shell=True)
 
     if record_time:
