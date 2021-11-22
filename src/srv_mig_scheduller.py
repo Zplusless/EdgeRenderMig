@@ -127,11 +127,11 @@ time.sleep(10) # 等待两个窗口都出现
 
 log.warning('\n\n========new experiment==========\n\n')
 
-for i in range(30):
+for i in range(8):
     print('switch')
     ts1 = current_milli_time()
     switch_window()
     ts2 = current_milli_time()
     log.info(f"switch - {ts2-ts1}")
-    time.sleep(2)
+    time.sleep(1.2)
     print('done\n')
