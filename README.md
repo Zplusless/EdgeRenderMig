@@ -12,8 +12,8 @@
    CLOUD_IP = '10.112.145.90' # game server的ip,跑游戏的云端server
    
 5. Corenet节点修改一下参数
-   # =============================================
-   # 新装机必须修改的参数
+
+   #新装机必须修改的参数
    CLUSTER_INTF = 'enp1s0'      # 用于cluster通信的网卡,走gtp隧道
    DN_INTF_1 = 'enp5s0'           # 连接edge server 1的网卡
    DN_INTF_2 = 'enp3s0'           # 连接edge server 2的网卡
