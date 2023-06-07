@@ -60,7 +60,7 @@ if __name__ == '__main__':
     s0 = net.nameToNode['s0']
     s10 = net.nameToNode['s10']
     s20 = net.nameToNode['s20']
-    link_Intf(config.CLUSTER_INTF, s0)  # 绑定外部网络
+    # link_Intf(config.CLUSTER_INTF, s0)  # 绑定外部网络  服务迁移实验中只用到一个cluster，故注释掉，否则需要额外绑定网卡
     link_Intf(config.DN_INTF_1, s10)
     link_Intf(config.DN_INTF_2, s20)
 
