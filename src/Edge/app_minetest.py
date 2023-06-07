@@ -27,7 +27,7 @@ def run_game():
     # print(name, ip, port)
 
     # 启动游戏
-    res, t1 = cmd(f"./minetest --address {config.CLOUD_IP} --port 30000 --name {config.GAME_ACCOUNT} --password {config.GAME_PASSWORD} --go", False)
+    res, t1 = cmd(f"~/minetest/bin/minetest --address {config.CLOUD_IP} --port 30000 --name {config.GAME_ACCOUNT} --password {config.GAME_PASSWORD} --go", False)
 
 
     return 'done'
