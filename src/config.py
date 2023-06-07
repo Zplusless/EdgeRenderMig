@@ -5,7 +5,16 @@
 
 IN_DEPLOYMENT = True # True为实际部署，用gunicorn运行；False使用flask自带的webserver
 
-CLOUD_IP = '192.168.50.1'
+
+
+# =============================================
+# Game配置
+CLOUD_IP = '192.168.5.182'  # server ip
+GAME_ACCOUNT = 'test'  # for game login
+GAME_PASSWORD = 'test' # for game login
+
+
+
 
 # =============================================
 RAN_NUM = 2 # topo中有多少个基站
