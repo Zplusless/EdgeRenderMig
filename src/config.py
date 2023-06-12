@@ -9,11 +9,15 @@ IN_DEPLOYMENT = True # True为实际部署，用gunicorn运行；False使用flas
 
 # =============================================
 # Game配置
-CLOUD_IP = '192.168.5.182'  # server ip
+CLOUD_IP = '192.168.5.63'  # server ip
 GAME_ACCOUNT = 'test'  # for game login
 GAME_PASSWORD = 'test' # for game login
 
+EDGE_NODE_IP_1 = '192.168.1.1'
+EDGE_NODE_IP_2 = '192.168.1.2'
 
+RTSP_STREAM_1 = f'rtsp://{EDGE_NODE_IP_1}:8554/desktop'
+RTSP_STREAM_2 = f'rtsp://{EDGE_NODE_IP_2}:8554/desktop'
 
 
 # =============================================
@@ -22,10 +26,10 @@ RAN_NUM = 2 # topo中有多少个基站
 
 # =============================================
 # 新装机必须修改的参数
-CLUSTER_INTF = 'ens38'      # 用于cluster通信的网卡,走gtp隧道
-DN_INTF_1 = 'ens39'           # 用于5G接入DN的网卡
-DN_INTF_2 = 'ens40'           # 用于5G接入DN的网卡
-HOST_IP = '192.168.50.135'  # mini5Gedge本机上网网卡的ip
+CLUSTER_INTF = 'enp0s31f6'      # 用于cluster通信的网卡,走gtp隧道
+DN_INTF_1 = 'enp4s0f0'           # 用于5G接入DN的网卡
+DN_INTF_2 = 'enp4s0f1'           # 用于5G接入DN的网卡
+HOST_IP = '192.168.5.82'  # mini5Gedge本机上网网卡的ip
 CLUSTER_ID = 3              # cluster id, 不同cluster不能重复
 
 

@@ -16,6 +16,9 @@ import logging
 
 
 def switch_window():
+    '''
+    用于模拟窗口切换，默认用于minecraft的迁移切换
+    '''
 
     keyboard = Controller()
     # ts1 = current_milli_time()
@@ -24,3 +27,12 @@ def switch_window():
         keyboard.release(Key.tab)
     # ts2 = current_milli_time()
     # switch_log.info(ts2-ts1)
+
+
+def minetest_f2():
+    '''
+    minetest的迁移切换，包含视频流的切换
+    '''
+    keyboard = Controller()
+    keyboard.press(Key.f2)
+    keyboard.release(Key.f2)
