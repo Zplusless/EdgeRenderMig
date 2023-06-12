@@ -55,11 +55,11 @@ def start_edge_game(edge_id):
     return res.status_code
 
 
-# 启动GA
-def start_edge_ga(edge_id):
-    addr = f'http://192.168.1.{edge_id}:8000/run_ga/'
-    res = requests.get(addr)
-    return res.status_code
+# # 启动GA
+# def start_edge_ga(edge_id):
+#     addr = f'http://192.168.1.{edge_id}:8000/run_ga/'
+#     res = requests.get(addr)
+#     return res.status_code
 
 
 @ue_app.route('/run_client/<dn_id>/')
@@ -68,7 +68,8 @@ def run_client(dn_id):
     # 让edge端启动
     res1 = start_edge_game(dn_id)
     time.sleep(2)
-    res2 = start_edge_ga(dn_id)
+    # res2 = start_edge_ga(dn_id)
+    res2 = 200
     
     if res1 == 200 and res2 == 200:
         print('start game at edge success!')

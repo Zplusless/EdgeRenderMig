@@ -4,7 +4,9 @@
 
 2. 在Edge服务器上配置[gaminganywhere](https://github.com/GamingAnywhere/gaminganywhere)
 
-3. 在Edge服务器上也拉取本项目，并且`python start_dnc`
+3. 在Edge服务器上也拉取本项目，并且:
+   - `python start_dnc`  启动监听程序
+   - 启动gaminganywhere的server端
 
 4. Edge服务器的的config.py文件需要修改以下项目
 
