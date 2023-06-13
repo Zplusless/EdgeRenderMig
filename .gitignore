@@ -20,3 +20,4 @@ mini5Gedge/wireshark_log/
 *.pcapng
 .minecraft/
 src/Edge/minecraft/.hmcl.json
+*.mp4

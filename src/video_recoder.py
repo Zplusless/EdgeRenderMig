@@ -1,3 +1,6 @@
+# sudo apt install libopencv-dev python3-opencv
+# using v3.2.0 opencv on ubuntu-18.04, high version like 4.7.0 or 4.5.3 fail to work
+
 import cv2 
 import time
 # from skimage.measure import  compare_ssim, compare_psnr, compare_mse
@@ -13,20 +16,29 @@ class Recorder:
         self.cap1, self.fps1, self.size1 = self.init_cap(url1)
         self.cap2, self.fps2, self.size2 = self.init_cap(url2)
 
+
+        # * write的size一定要一致
+        # https://blog.csdn.net/daixiangzi/article/details/86165129
+        if size:
+            self.size = size
+        else:
+            self.size = self.size1
+
         fps = max(self.fps1, self.fps2)
-        self.out = cv2.VideoWriter(output_file, cv2.VideoWriter_fourcc(*'XVID'), fps, self.size2)
+        # self.out = cv2.VideoWriter(output_file, cv2.VideoWriter_fourcc(*"MJPG"), fps, self.size)
+        self.out = cv2.VideoWriter(output_file, cv2.VideoWriter_fourcc(*"mp4v"), fps, self.size)
 
         self.on_switching = False # 在True期间会判断是否要切换cap
         self.default_cap = self.cap1
         self.copilote_cap = self.cap2
-        self.size = size
-
+        
         # 计时模块
         self.log = logger
         self.t1 = None
         self.t2 = None
 
-        self.running = True
+        self.end = False
+
 
 
     def init_cap(self, url):
@@ -43,12 +55,15 @@ class Recorder:
 
     def close(self):
         print('start closing process')
-        self.running = False
+        self.end = True
+
+        # cv2.destroyAllWindows()
+        print("finished")
+
+    def release_resource(self):
         self.default_cap.release()
         self.copilote_cap.release()
         self.out.release()
-        cv2.destroyAllWindows()
-        print("finished")
 
     def trigger_switch(self):
         self.on_switching = True
@@ -57,14 +72,16 @@ class Recorder:
     def run(self):
         try:
             # cap = None
-            while self.running:
+            while True:
                 if not self.default_cap.isOpened():
                     time.sleep(1)
+                    print('default cap disappear')
                     continue
                 # else:
                 #     cap = self.cap1
                 
                 ret1,frame1 = self.default_cap.read()
+                frame1 = cv2.resize(frame1, self.size)
                 if not ret1:
                     if self.default_cap == self.cap1:
                         print('cap1 not recieved yet')
@@ -72,20 +89,18 @@ class Recorder:
                     else:
                         # self.close()
                         print('default cap ends')
+                        self.release_resource()
                         break
-                if self.size:
-                    frame1 = cv2.resize(frame1, self.size)
+                
 
                     
                 if self.copilote_cap.isOpened():
                     ret2,frame2 = self.copilote_cap.read()
+                    frame2 = cv2.resize(frame2, self.size)
                     if not ret2:
                         # break
                         pass
-                    
-                    else:
-                        if self.size:
-                            frame2 = cv2.resize(frame2, self.size)
+                                               
 
                 
 
@@ -93,8 +108,8 @@ class Recorder:
                 if self.on_switching and ret1 and ret2:
                     ssim = compute_ssim(frame1, frame2 , channel_axis=2, multichannel=True)
                     print(ssim)
-                    if ssim > 0.9:
-
+                    if ssim > 0.5:
+                        print(f'before switching {id(self.default_cap)}<--->{id(self.copilote_cap)}')
                         self.t1 = current_milli_time()
 
                         temp = self.copilote_cap
@@ -108,28 +123,46 @@ class Recorder:
 
                         self.on_switching = False
                         print("\n\n========trigger switch!!=====")
+                        print(f'after switching {id(self.default_cap)}<--->{id(self.copilote_cap)}')
 
+                
                 self.out.write(frame1)
-                cv2.imshow("frame",frame1)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
-        except KeyboardInterrupt:
-            self.close()
+                print('-', end='')
 
-        self.close()
+
+                # cv2.imshow("frame",frame1)
+
+
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    print('break with key_q pressed')
+                    break
+            
+                if self.end:
+                    print('break normally')
+                    self.release_resource()
+                    break
+
+        except KeyboardInterrupt:
+            print('stop running because of ctrl-c')
+            self.release_resource()
+
+        # self.close()
 
 
 
 
 if __name__ == "__main__":
     from threading import Thread
-    r = Recorder('input.mp4', 'concat_output.mp4', 'test_output.mp4', (960, 540))
+    r = Recorder('rtsp://192.168.1.1:8554/desktop', 'rtsp://192.168.1.2:8554/desktop', 'test_output.mp4') #, (960, 540))
     t=  Thread(target=r.run)
     t.start()
-    
+
 
     time.sleep(5)
     r.trigger_switch()
-    time.sleep(15)
+
+
+
+    time.sleep(5)
     r.close()
     # t.join()
