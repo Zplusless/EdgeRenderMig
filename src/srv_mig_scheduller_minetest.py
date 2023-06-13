@@ -126,39 +126,46 @@ time.sleep(10) # 等待两个窗口都出现
 
 
 
-# log.warning('\n\n========new experiment==========\n\n')
+log.warning('\n\n========new experiment==========\n\n')
 
 
-# # 开始录屏
-# from video_recoder import Recorder
-# from threading import Thread
-
-# r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'srv_mig_{hms()}.mp4', (960, 540), logger=log)
-# t=  Thread(target=r.run)
-# t.start()
-
-# # 运行几秒钟
-# time.sleep(3)
-
-# # 按F2 切换控制权限
-# sw.minetest_f2()
+# 开始录屏
+addr = f'http://100.1.1.1:6600/start_record/'
+ans = requests.get(addr)
 
 
-# # trigger switch
-# #* 此处将log作为参数传进去，在recorder内完成录屏
-# r.trigger_switch()
+# 运行几秒钟
+time.sleep(5)
+
+# 按F2 切换控制权限
+sw.minetest_f2()
 
 
+# trigger switch
+addr = f'http://100.1.1.1:6600/trigger_switch/'
+ans = requests.get(addr)
 
 
-# # switch 窗口
-# sw.switch_window()
+# switch 窗口
+sw.switch_window()
 
 
 
-# # 结束
-# time.sleep(5)
+# 结束
+time.sleep(10)
+
+
+# 获取downtime
+addr = f'http://100.1.1.1:6600/get_downtime/'
+t = requests.get(addr)
+
+dt = float(t.text)
+# dt = int(requests.get(addr).text)
+log.info(f"switch - {dt}")
+
+
 # r.close()
-
+addr = f'http://100.1.1.1:6600/close_recorder/'
+ans = requests.get(addr)
 
 

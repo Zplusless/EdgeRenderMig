@@ -36,6 +36,7 @@ class Recorder:
         self.log = logger
         self.t1 = None
         self.t2 = None
+        self.down_time = None
 
         self.end = False
 
@@ -68,6 +69,12 @@ class Recorder:
     def trigger_switch(self):
         self.on_switching = True
         print('switching enabled')
+
+    def get_downtime(self):
+        assert self.down_time
+        t = self.down_time
+        self.down_time = None
+        return t
 
     def run(self):
         try:
@@ -108,7 +115,7 @@ class Recorder:
                 if self.on_switching and ret1 and ret2:
                     ssim = compute_ssim(frame1, frame2 , channel_axis=2, multichannel=True)
                     print(ssim)
-                    if ssim > 0.5:
+                    if ssim > 0.9:
                         print(f'before switching {id(self.default_cap)}<--->{id(self.copilote_cap)}')
                         self.t1 = current_milli_time()
 
@@ -118,8 +125,9 @@ class Recorder:
                         frame1 = frame2
 
                         self.t2 = current_milli_time()
+                        self.down_time = self.t2-self.t1
                         if self.log:
-                            self.log.info(f"switch - {self.t2-self.t1}")
+                            self.log.info(f"switch - {self.down_time}")
 
                         self.on_switching = False
                         print("\n\n========trigger switch!!=====")
@@ -163,6 +171,6 @@ if __name__ == "__main__":
 
 
 
-    time.sleep(5)
+    time.sleep(8)
     r.close()
     # t.join()

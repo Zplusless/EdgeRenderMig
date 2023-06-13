@@ -1,11 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 """
-This is a simulation of the apps running on UE.
-Functions like srv_1() are different client apps 
-whose server side are running at DN.
 
-run_srv() controls which client app will run.
 """
 
 import time
@@ -15,6 +11,7 @@ from flask import Flask, request
 
 # from UE.Snakepygame import SnakeClient
 from utils.call_cmd import cmd
+from utils.timmer import current_milli_time, hms
 import asyncio
 
 import requests
@@ -22,7 +19,23 @@ import requests
 import config
 
 
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+log = logging.getLogger(__name__)
 
+
+
+# 开始录屏
+from video_recoder import Recorder
+from threading import Thread
+
+r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'srv_mig_{hms()}.mp4', (960, 540))
+t=  Thread(target=r.run)
+
+TEMP = {
+        'recorder': r,
+        'thread': t,
+        'downtime': None
+        }
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -34,10 +47,10 @@ ue_app = Flask(__name__)
 
 
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-log = logging.getLogger(__name__)
 
-TEMP = {'client':None}
+
+
+
 
 def run_client(client):
     asyncio.get_event_loop().run_until_complete(client.game())
@@ -60,6 +73,33 @@ def start_edge_game(edge_id):
 #     addr = f'http://192.168.1.{edge_id}:8000/run_ga/'
 #     res = requests.get(addr)
 #     return res.status_code
+
+
+@ue_app.route('/start_record/')
+def start_record():
+    t = TEMP['thread']
+    t.start()
+    return 'done'
+
+
+@ue_app.route('/trigger_switch/')
+def trigger_switch():
+    r:Recorder = TEMP['recorder']
+    r.trigger_switch()
+    return 'done'
+
+@ue_app.route('/close_recorder/')
+def close_recorder():
+    r:Recorder = TEMP['recorder']
+    r.close()
+    return 'done'
+
+@ue_app.route('/get_downtime/')
+def get_downtime():
+    r:Recorder = TEMP['recorder']
+    t = r.get_downtime()
+    return str(t)
+
 
 
 @ue_app.route('/run_client/<dn_id>/')
