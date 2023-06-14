@@ -100,7 +100,8 @@ if __name__ =="__main__":
     from video_recoder import Recorder
     from threading import Thread
 
-    r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'srv_mig_{hms()}.mp4', (960, 540))
+    # r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4', (960, 540), logger=log)
+    r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4')
     t=  Thread(target=r.run)
     t.start()
 
@@ -120,7 +121,8 @@ if __name__ =="__main__":
     # # switch 窗口
     # sw.switch_window()
 
-
+    # t = r.do_switch()
+    # print(f'downtime--->:{t}')
 
     # 切换后运行一段时间
     time.sleep(10)
@@ -128,6 +130,8 @@ if __name__ =="__main__":
 
     # 获取downtime
     t = r.get_downtime()
+    print(f'switching downtime:{t}')
+   
 
 
     # 停止记录

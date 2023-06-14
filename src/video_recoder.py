@@ -16,6 +16,9 @@ class Recorder:
         self.cap1, self.fps1, self.size1 = self.init_cap(url1)
         self.cap2, self.fps2, self.size2 = self.init_cap(url2)
 
+        self.frame1 = None
+        self.frame2 = None
+
 
         # * write的size一定要一致
         # https://blog.csdn.net/daixiangzi/article/details/86165129
@@ -71,10 +74,47 @@ class Recorder:
         print('switching enabled')
 
     def get_downtime(self):
-        assert self.down_time
+        while self.down_time == None:
+            print('switch not finished, wait for switching')
+            time.sleep(0.5)
+            if self.end:
+                print('record has finished, no switching, exit')
+                return -1
+
         t = self.down_time
         self.down_time = None
         return t
+
+
+    # def do_switch(self):
+    #     print('start switching')
+    #     while True:
+    #         if self.default_cap.isOpened() and self.copilote_cap.isOpened():
+    #             ssim = compute_ssim(self.frame1, self.frame2 , channel_axis=2, multichannel=True)
+    #             print(ssim)
+    #             if ssim > 0.9:
+    #                 print(f'before switching {id(self.default_cap)}<--->{id(self.copilote_cap)}')
+    #                 self.t1 = current_milli_time()
+
+    #                 temp = self.copilote_cap
+    #                 self.copilote_cap = self.default_cap
+    #                 self.default_cap = temp
+
+
+    #                 self.t2 = current_milli_time()
+    #                 self.down_time = self.t2-self.t1
+    #                 # if self.log:
+    #                 #     self.log.info(f"switch - {self.down_time}")
+
+    #                 # self.on_switching = False
+    #                 print("\n\n========trigger switch!!=====")
+    #                 print(f'after switching {id(self.default_cap)}<--->{id(self.copilote_cap)}')
+                    
+    #                 break
+    #         else:
+    #             time.sleep(0.5)
+    #     return self.down_time
+
 
     def run(self):
         try:
@@ -88,7 +128,7 @@ class Recorder:
                 #     cap = self.cap1
                 
                 ret1,frame1 = self.default_cap.read()
-                frame1 = cv2.resize(frame1, self.size)
+                self.frame1 = cv2.resize(frame1, self.size)
                 if not ret1:
                     if self.default_cap == self.cap1:
                         print('cap1 not recieved yet')
@@ -103,7 +143,12 @@ class Recorder:
                     
                 if self.copilote_cap.isOpened():
                     ret2,frame2 = self.copilote_cap.read()
-                    frame2 = cv2.resize(frame2, self.size)
+                    try:
+                        self.frame2 = cv2.resize(frame2, self.size)
+                    except Exception as e:
+                        print(f'\n\n\n\nsize:{self.size}\n\n\n\n')
+                        print(e)
+                        return -1
                     if not ret2:
                         # break
                         pass
@@ -134,7 +179,7 @@ class Recorder:
                         print(f'after switching {id(self.default_cap)}<--->{id(self.copilote_cap)}')
 
                 
-                self.out.write(frame1)
+                self.out.write(self.frame1)
                 print('-', end='')
 
 
