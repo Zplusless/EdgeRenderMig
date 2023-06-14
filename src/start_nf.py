@@ -127,6 +127,25 @@ def del_ue(ue):
 
 
 
+# 以下代码用于响应部署在UE上的srv_mig控制逻辑
+# add tunnel时，默认UE的id
+from corenet_controller import Scheduller
+s = Scheduller()
+@nf_app.route('/setup_link/<dn>/')
+def setup_link(dn):
+    dn = int(dn)
+    if dn == 1:
+        s.add_tunnel(1001001, 1, 0)
+        return '1'
+    if dn == 2:
+        s.add_tunnel(2001001, 2, 1)
+        return '2'
+    else:
+        raise Exception('Wrong dn id')
+
+
+
+
 if __name__=='__main__':
     print('*** starting NF operator')
     nf_app.run(host='0.0.0.0', port=5000)

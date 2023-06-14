@@ -52,8 +52,8 @@ ue_app = Flask(__name__)
 
 
 
-def run_client(client):
-    asyncio.get_event_loop().run_until_complete(client.game())
+# def run_client(client):
+#     asyncio.get_event_loop().run_until_complete(client.game())
 
 # Edge启动snake游戏 && GA
 def start_edge_game(edge_id):

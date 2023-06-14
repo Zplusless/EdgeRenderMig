@@ -3,7 +3,7 @@
 
 
 
-IN_DEPLOYMENT = True # True为实际部署，用gunicorn运行；False使用flask自带的webserver
+IN_DEPLOYMENT = False # True为实际部署，用gunicorn运行；False使用flask自带的webserver
 
 
 
