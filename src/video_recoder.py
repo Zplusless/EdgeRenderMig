@@ -6,7 +6,7 @@ import time
 # from skimage.measure import  compare_ssim, compare_psnr, compare_mse
 from skimage.metrics import structural_similarity as compute_ssim
 from logging import Logger
-from utils.timmer import current_milli_time
+from utils.timmer import current_milli_time, wait
 
 
 class Recorder:
@@ -18,6 +18,7 @@ class Recorder:
 
         self.frame1 = None
         self.frame2 = None
+        self.ssim = None
 
 
         # * write的size一定要一致
@@ -75,7 +76,7 @@ class Recorder:
 
     def get_downtime(self):
         while self.down_time == None:
-            print('switch not finished, wait for switching')
+            print(f'switch not finished, wait for switching: ssim={self.ssim}')
             time.sleep(0.5)
             if self.end:
                 print('record has finished, no switching, exit')
@@ -158,9 +159,9 @@ class Recorder:
 
 
                 if self.on_switching and ret1 and ret2:
-                    ssim = compute_ssim(frame1, frame2 , channel_axis=2, multichannel=True)
-                    print(ssim)
-                    if ssim > 0.9:
+                    self.ssim = compute_ssim(frame1, frame2 , channel_axis=2, multichannel=True)
+                    print(self.ssim)
+                    if self.ssim > 0.9:
                         print(f'before switching {id(self.default_cap)}<--->{id(self.copilote_cap)}')
                         self.t1 = current_milli_time()
 

@@ -4,7 +4,7 @@ import config
 import time
 import logging
 import socket
-from utils.timmer import current_milli_time, hms
+from utils.timmer import current_milli_time, hms, wait
 import utils.switch_window as sw
 
 
@@ -93,7 +93,7 @@ if __name__ =="__main__":
 
 
     # sleep
-    time.sleep(10)
+    wait(10)
 
 
     # 开始录屏
@@ -108,7 +108,7 @@ if __name__ =="__main__":
 
         
     # 运行几秒钟
-    time.sleep(5)
+    wait(5)
 
     # 按F2 切换控制权限
     sw.minetest_f2()
@@ -125,7 +125,7 @@ if __name__ =="__main__":
     # print(f'downtime--->:{t}')
 
     # 切换后运行一段时间
-    time.sleep(10)
+    wait(10)
 
 
     # 获取downtime
