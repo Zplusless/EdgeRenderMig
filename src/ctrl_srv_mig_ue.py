@@ -168,8 +168,8 @@ if __name__ =="__main__":
     #        启动游戏        双stream准备    切换用时，含等待ssim的时间
     t_mig = (tm1e - tm1) + (tm2e - tm2) + (tm3 - t1)
 
-    print(f'switching downtime:{t_down}')
-    print(f'total migration time: {t_mig}')
+    print(f'\nswitching downtime:{t_down}')
+    print(f'\ntotal migration time: {t_mig}')
 
    
     # 切换后运行一段时间
