@@ -8,6 +8,9 @@ from utils.timmer import current_milli_time, hms, wait
 import utils.switch_window as sw
 
 
+from video_recoder import Recorder
+from threading import Thread
+
 
 hostname = socket.gethostname()
 logging.basicConfig(
@@ -32,6 +35,15 @@ def start_edge_game(edge_id):
 
     res = requests.post(addr, data = data)
     return res.status_code
+
+# 启动GA
+def start_edge_ga(edge_id):
+    addr = f'http://192.168.1.{edge_id}:8000/run_ga/'
+    res = requests.get(addr)
+    return res.status_code
+
+
+
 
 def start_stream(dn_id, logfile=None):
     command = f'cd /home/edge/gaminganywhere-master/bin && ./ga-client config/client.abs.conf rtsp://192.168.1.{dn_id}:8554/desktop'
@@ -68,6 +80,8 @@ if __name__ =="__main__":
 
 
     # =================================
+    #! 迁移时间计时点1
+    tm1= current_milli_time()
 
     # 建立dn2的link
     addr = f'http://100.1.1.254:5000/setup_link/2/'
@@ -79,6 +93,9 @@ if __name__ =="__main__":
     # ue接入bs2
     res, t = cmd(f'bash UE/route_init_2-2.sh', True)
 
+
+    # # 启动dn2上的GA
+    # res = start_edge_ga(2)
 
     # UE启动dn2上的游戏实例
     res = start_edge_game(2)
@@ -92,31 +109,46 @@ if __name__ =="__main__":
         raise Exception(f'game start failed at Edge-2')
 
 
+
+    #! 迁移时间计时点1end
+    tm1e= current_milli_time()
+
     # sleep
-    wait(10)
+    wait(3)
+
 
 
     # 开始录屏
-    from video_recoder import Recorder
-    from threading import Thread
+
+
+    #! 迁移时间计时点2
+    tm2= current_milli_time()
+
 
     # r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4', (960, 540), logger=log)
-    r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4')
+    r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4', (800, 600))
     t=  Thread(target=r.run)
     t.start()
 
-
+    #! 迁移时间计时点2end
+    tm2e= current_milli_time()
         
     # 运行几秒钟
     wait(5)
 
+    t1 = current_milli_time()
+
     # 按F2 切换控制权限
-    sw.minetest_f2()
+    # sw.minetest_f2()
 
-
-    # trigger switch
+    # switch 窗口
+    sw.switch_window()
+    
+    
+    # 允许视频流切换
     r.trigger_switch()
 
+    t2=current_milli_time()
 
     # # switch 窗口
     # sw.switch_window()
@@ -124,15 +156,24 @@ if __name__ =="__main__":
     # t = r.do_switch()
     # print(f'downtime--->:{t}')
 
-    # 切换后运行一段时间
-    wait(10)
+
 
 
     # 获取downtime
     t = r.get_downtime()
-    print(f'switching downtime:{t}')
-   
+    tm3 = current_milli_time()
 
+
+    t_down = t+t2-t1
+    #        启动游戏        双stream准备    切换用时，含等待ssim的时间
+    t_mig = (tm1e - tm1) + (tm2e - tm2) + (tm3 - t1)
+
+    print(f'switching downtime:{t_down}')
+    print(f'total migration time: {t_mig}')
+
+   
+    # 切换后运行一段时间
+    wait(10)
 
     # 停止记录
     r.close()
