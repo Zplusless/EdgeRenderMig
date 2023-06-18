@@ -9,6 +9,12 @@ IN_DEPLOYMENT = False # True为实际部署，用gunicorn运行；False使用fla
 
 # =============================================
 # Game配置
+SSIM_THRESHOLD = 0.9
+
+
+
+# =============================================
+# Game配置
 CLOUD_IP = '192.168.5.63'  # server ip
 GAME_ACCOUNT = 'test'  # for game login
 GAME_PASSWORD = 'test' # for game login

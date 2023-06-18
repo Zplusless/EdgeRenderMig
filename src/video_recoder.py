@@ -7,6 +7,7 @@ import time
 from skimage.metrics import structural_similarity as compute_ssim
 from logging import Logger
 from utils.timmer import current_milli_time, wait
+import config
 
 
 class Recorder:
@@ -185,7 +186,7 @@ class Recorder:
                 if self.on_switching:
                     self.ssim = compute_ssim(self.frame1, self.frame2 , channel_axis=2, multichannel=True)
                     print(self.ssim)
-                    if self.ssim > 0.98:
+                    if self.ssim > config.SSIM_THRESHOLD:
                         print(f'before switching {id(self.default_cap)}<--->{id(self.copilote_cap)}')
                         self.t1 = current_milli_time()
 
@@ -229,8 +230,8 @@ class Recorder:
 if __name__ == "__main__":
     from threading import Thread
     from utils.timmer import wait
-    # r = Recorder('rtsp://192.168.5.81:8554/desktop', 'rtsp://192.168.5.61:8554/desktop', 'test_output.mp4') #, (960, 540))
-    r = Recorder('rtsp://192.168.1.1:8554/desktop', 'rtsp://192.168.1.2:8554/desktop', 'test_output.mp4') #, (960, 540))
+    r = Recorder('rtsp://192.168.5.81:8554/desktop', 'rtsp://192.168.5.61:8554/desktop', 'test_output.mp4') #, (960, 540))
+    # r = Recorder('rtsp://192.168.1.1:8554/desktop', 'rtsp://192.168.1.2:8554/desktop', 'test_output.mp4') #, (960, 540))
     t=  Thread(target=r.run)
     t.start()
 
