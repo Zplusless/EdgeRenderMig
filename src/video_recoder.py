@@ -13,8 +13,8 @@ class Recorder:
     def __init__(self, url1, url2, output_file, size=None, logger:Logger=None) -> None:
         self.url1=url1
         self.url2=url2
-        self.cap1, self.fps1, self.size1 = self.init_cap(url1)
-        self.cap2, self.fps2, self.size2 = self.init_cap(url2)
+        self.cap1, self.fps1, self.size1 = self.init_cap(self.url1)
+        self.cap2, self.fps2, self.size2 = self.init_cap(self.url2)
 
         self.frame1 = None
         self.frame2 = None
@@ -149,9 +149,29 @@ class Recorder:
                 ret1,frame1 = self.default_cap.read()
                 ret2,frame2 = self.copilote_cap.read()
 
+
+                #! 重置capture--->https://stackoverflow.com/a/56379034
                 if not (ret1 and ret2):
-                    de_cap = "cap1" if self.default_cap == self.cap1 else "cap2"
-                    co_cap = "cap2" if self.copilote_cap == self.cap2 else "cap1"
+                    
+                    self.cap1, self.fps1, self.size1 = self.init_cap(self.url1)
+                    self.cap2, self.fps2, self.size2 = self.init_cap(self.url2)
+
+                    # 判断cap是否已经交换过
+                    is_changed = (self.default_cap == self.cap2) 
+
+                    if is_changed:
+                        de_cap = "cap2"
+                        co_cap = "cap1"
+                        self.default_cap = self.cap2
+                        self.copilote_cap = self.cap1
+
+                    
+                    else:
+                        de_cap = "cap1"
+                        co_cap = "cap2"     
+                        self.default_cap = self.cap1
+                        self.copilote_cap = self.cap2                   
+
                     print('Reading from video capture failed')
                     print(f'default_cap({de_cap}) --->{ret1},  copilot_cap({co_cap}) --->{ret2}')
                     time.sleep(1)
