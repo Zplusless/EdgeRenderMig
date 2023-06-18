@@ -7,14 +7,15 @@ import time
 from skimage.metrics import structural_similarity as compute_ssim
 from logging import Logger
 from utils.timmer import current_milli_time, wait
+import config
 
 
 class Recorder:
     def __init__(self, url1, url2, output_file, size=None, logger:Logger=None) -> None:
         self.url1=url1
         self.url2=url2
-        self.cap1, self.fps1, self.size1 = self.init_cap(url1)
-        self.cap2, self.fps2, self.size2 = self.init_cap(url2)
+        self.cap1, self.fps1, self.size1 = self.init_cap(self.url1)
+        self.cap2, self.fps2, self.size2 = self.init_cap(self.url2)
 
         self.frame1 = None
         self.frame2 = None
@@ -59,16 +60,18 @@ class Recorder:
         return cap, fps, (width, height)
 
     def close(self):
-        print('start closing process')
+        print('Set self.end=True')
         self.end = True
 
         # cv2.destroyAllWindows()
-        print("finished")
+        # print("finished")
 
     def release_resource(self):
+        print('Releasing captures')
         self.default_cap.release()
         self.copilote_cap.release()
         self.out.release()
+        print('Releasing End')
 
     def trigger_switch(self):
         self.on_switching = True
@@ -76,10 +79,10 @@ class Recorder:
 
     def get_downtime(self):
         while self.down_time == None:
-            print(f'switch not finished, wait for switching: ssim={self.ssim}')
+            print(f'switch not finished, wait for switching: ssim={self.ssim}, on_switching = {self.on_switching}')
             if self.ssim == None:
                 print(len(self.frame1), len(self.frame2), compute_ssim(self.frame1, self.frame2 , channel_axis=2, multichannel=True))
-            time.sleep(0.1) 
+            time.sleep(2) 
             if self.end:
                 print('record has finished, no switching, exit')
                 return -1
@@ -123,51 +126,67 @@ class Recorder:
         try:
             # cap = None
             while True:
-                if not self.default_cap.isOpened():
+
+                #! 一定要先判断是否end，否则容易出现中途continue导致运行不到end的判断这一步
+                if self.end:
+                    print('break normally')
+                    self.release_resource()
+                    break
+
+                # 首先保证cap都是开的
+                de_cap_ready = self.default_cap.isOpened()
+                co_cap_ready = self.copilote_cap.isOpened()
+                if not (de_cap_ready and co_cap_ready):
+                    de_cap = "cap1" if self.default_cap == self.cap1 else "cap2"
+                    co_cap = "cap2" if self.copilote_cap == self.cap2 else "cap1"
+                    print('Not all caps are ready')
+                    print(f'default_cap ---> {de_cap},  copilot_cap ---> {co_cap}')
                     time.sleep(1)
-                    print('default cap disappear')
                     continue
-                # else:
-                #     cap = self.cap1
                 
+                
+                
+                # 保证都读到了frame
                 ret1,frame1 = self.default_cap.read()
-                self.frame1 = cv2.resize(frame1, self.size)
-                if not ret1:
-                    if self.default_cap == self.cap1:
-                        print('cap1 not recieved yet')
-                        continue
-                    else:
-                        # self.close()
-                        print('default cap ends')
-                        self.release_resource()
-                        break
-                
+                ret2,frame2 = self.copilote_cap.read()
+
+
+                #! 重置capture--->https://stackoverflow.com/a/56379034
+                if not (ret1 and ret2):
+                    
+                    self.cap1, self.fps1, self.size1 = self.init_cap(self.url1)
+                    self.cap2, self.fps2, self.size2 = self.init_cap(self.url2)
+
+                    # 判断cap是否已经交换过
+                    is_changed = (self.default_cap == self.cap2) 
+
+                    if is_changed:
+                        de_cap = "cap2"
+                        co_cap = "cap1"
+                        self.default_cap = self.cap2
+                        self.copilote_cap = self.cap1
 
                     
-                if self.copilote_cap.isOpened():
-                    ret2,frame2 = self.copilote_cap.read()
-                    try:
-                        self.frame2 = cv2.resize(frame2, self.size)
-                    except Exception as e:
-                        print(f'\n\n\n\nsize:{self.size}\n\n\n\n')
-                        print(e)
-                        return -1
-                    if not ret2:
-                        # break
-                        continue
-                else:
+                    else:
+                        de_cap = "cap1"
+                        co_cap = "cap2"     
+                        self.default_cap = self.cap1
+                        self.copilote_cap = self.cap2                   
+
+                    print('Reading from video capture failed')
+                    print(f'default_cap({de_cap}) --->{ret1},  copilot_cap({co_cap}) --->{ret2}')
                     time.sleep(1)
-                    print('copilote cap not start yet')
                     continue
-                                               
 
-                
 
+
+                self.frame1 = cv2.resize(frame1, self.size)
+                self.frame2 = cv2.resize(frame2, self.size)
 
                 if self.on_switching:
                     self.ssim = compute_ssim(self.frame1, self.frame2 , channel_axis=2, multichannel=True)
                     print(self.ssim)
-                    if self.ssim > 0.9:
+                    if self.ssim > config.SSIM_THRESHOLD:
                         print(f'before switching {id(self.default_cap)}<--->{id(self.copilote_cap)}')
                         self.t1 = current_milli_time()
 
@@ -197,10 +216,7 @@ class Recorder:
                     print('break with key_q pressed')
                     break
             
-                if self.end:
-                    print('break normally')
-                    self.release_resource()
-                    break
+
 
         except KeyboardInterrupt:
             print('stop running because of ctrl-c')
@@ -215,6 +231,7 @@ if __name__ == "__main__":
     from threading import Thread
     from utils.timmer import wait
     r = Recorder('rtsp://192.168.5.81:8554/desktop', 'rtsp://192.168.5.61:8554/desktop', 'test_output.mp4') #, (960, 540))
+    # r = Recorder('rtsp://192.168.1.1:8554/desktop', 'rtsp://192.168.1.2:8554/desktop', 'test_output.mp4') #, (960, 540))
     t=  Thread(target=r.run)
     t.start()
 

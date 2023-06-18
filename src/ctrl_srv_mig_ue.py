@@ -126,7 +126,7 @@ if __name__ =="__main__":
 
 
     # r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4', (960, 540), logger=log)
-    r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4', (800, 600))
+    r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4')# , (800, 600))
     t=  Thread(target=r.run)
     t.start()
 
@@ -169,6 +169,7 @@ if __name__ =="__main__":
 
 
     t_down = t+t2-t1
+    # t_down = t
     #        连接bs启动游戏    双stream准备    允许切换
     t_mig = (tm1e - tm1) + (tm2e - tm2) + (t2 - t1) + (tm3e - tm3)
 
