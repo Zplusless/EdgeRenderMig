@@ -59,16 +59,18 @@ class Recorder:
         return cap, fps, (width, height)
 
     def close(self):
-        print('start closing process')
+        print('Set self.end=True')
         self.end = True
 
         # cv2.destroyAllWindows()
-        print("finished")
+        # print("finished")
 
     def release_resource(self):
+        print('Releasing captures')
         self.default_cap.release()
         self.copilote_cap.release()
         self.out.release()
+        print('Releasing End')
 
     def trigger_switch(self):
         self.on_switching = True

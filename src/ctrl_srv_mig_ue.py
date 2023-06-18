@@ -114,7 +114,7 @@ if __name__ =="__main__":
     tm1e= current_milli_time()
 
     # sleep
-    wait(3)
+    wait(3, 'Streaming Game')
 
 
 
@@ -134,7 +134,7 @@ if __name__ =="__main__":
     tm2e= current_milli_time()
         
     # 运行几秒钟
-    wait(2)
+    wait(2, 'Video Recording')
 
     t1 = current_milli_time()
 
@@ -158,7 +158,7 @@ if __name__ =="__main__":
 
 
     # 运行几秒钟,让trigger部分运行起来
-    wait(5)
+    wait(5, 'Triggering Switch')
 
 
     tm3 = current_milli_time()
@@ -175,9 +175,15 @@ if __name__ =="__main__":
     print(f'\nswitching downtime:{t_down}')
     print(f'\ntotal migration time: {t_mig}')
 
+
+
+    log.info(f'migration - {t_mig}')
+    log.info(f'downtime - {t_down}')
+    log.info('\n\n\n====================================')
+
    
     # 切换后运行一段时间
-    wait(10)
+    wait(10, 'Before Ending')
 
     # 停止记录
     r.close()

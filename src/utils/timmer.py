@@ -9,8 +9,8 @@ def hms():
     return datetime.datetime.fromtimestamp(time.time()).strftime("%H:%M:%S.%f")[:8]
 
 
-def wait(t):
-    for i in trange(t*2, desc=f'wait {t}s', ncols=80):
+def wait(t, msg=''):
+    for i in trange(t*2, desc=f'{msg} wait {t}s', ncols=80):
         time.sleep(0.5)
     
 
