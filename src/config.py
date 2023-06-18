@@ -2,8 +2,14 @@
 # -*- coding: UTF-8 -*-
 
 
+# 是否使用gunicorn，使用ctrl_srv_mig_ue.py控制时，gunicorn报错
+IN_DEPLOYMENT = False # True为实际部署，用gunicorn运行；False使用flask自带的webserver
 
-IN_DEPLOYMENT = True # True为实际部署，用gunicorn运行；False使用flask自带的webserver
+
+
+# =============================================
+# Game配置
+SSIM_THRESHOLD = 0.9
 
 
 
