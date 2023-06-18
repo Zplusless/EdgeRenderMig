@@ -134,7 +134,7 @@ if __name__ =="__main__":
     tm2e= current_milli_time()
         
     # 运行几秒钟
-    wait(5)
+    wait(2)
 
     t1 = current_milli_time()
 
@@ -157,16 +157,20 @@ if __name__ =="__main__":
     # print(f'downtime--->:{t}')
 
 
+    # 运行几秒钟,让trigger部分运行起来
+    wait(5)
 
+
+    tm3 = current_milli_time()
 
     # 获取downtime
     t = r.get_downtime()
-    tm3 = current_milli_time()
+    tm3e = current_milli_time()
 
 
     t_down = t+t2-t1
-    #        启动游戏        双stream准备    切换用时，含等待ssim的时间
-    t_mig = (tm1e - tm1) + (tm2e - tm2) + (tm3 - t1)
+    #        连接bs启动游戏    双stream准备    允许切换
+    t_mig = (tm1e - tm1) + (tm2e - tm2) + (t2 - t1) + (tm3e - tm3)
 
     print(f'\nswitching downtime:{t_down}')
     print(f'\ntotal migration time: {t_mig}')
