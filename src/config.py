@@ -6,6 +6,8 @@
 IN_DEPLOYMENT = False # True为实际部署，用gunicorn运行；False使用flask自带的webserver
 
 
+# 是否测量edge测的cpu和带宽
+IN_MEASUREMENT = False
 
 # =============================================
 # Game配置

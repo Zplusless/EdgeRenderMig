@@ -52,8 +52,41 @@ def start_stream(dn_id, logfile=None):
 
 
 
+def measure_start():
+    url1 = f'http://{config.EDGE_NODE_IP_1}:10800/start/'
+    url2 = f'http://{config.EDGE_NODE_IP_2}:10800/start/'
+    res1 = requests.get(url1)
+    res2 = requests.get(url2)
+    return res1.status_code, res2.status_code
+
+
+def measure_end():
+    url1 = f'http://{config.EDGE_NODE_IP_1}:10800/end/'
+    url2 = f'http://{config.EDGE_NODE_IP_2}:10800/end/'
+    res1 = requests.get(url1)
+    res2 = requests.get(url2)
+    return res1.status_code, res2.status_code
+
+def measure_insert(msg:str):
+    if msg not in ['STREAM', 'MIGRATION', 'SWITCH', 'MIGRATION_END', 'STREAM_END']:
+        raise Exception('wrong measure insert message')
+    url1 = f'http://{config.EDGE_NODE_IP_1}:10800/insert/{msg}/'
+    url2 = f'http://{config.EDGE_NODE_IP_2}:10800/insert/{msg}/'
+    res1 = requests.get(url1)
+    res2 = requests.get(url2)
+    return res1.status_code, res2.status_code
+
 
 if __name__ =="__main__":
+
+
+#!##############################################
+#   实验开始
+#!##############################################
+    #?-----------------------------------
+    if config.IN_MEASUREMENT:
+        measure_start()
+    #?-----------------------------------
 
     # 建立dn1的link
     addr = f'http://100.1.1.254:5000/setup_link/1/'
@@ -61,16 +94,22 @@ if __name__ =="__main__":
     print(ans, type(ans))
     if ans != '1':
         raise Exception('link to dn1 failed')
-
-
     # ue接入bs1
     res, t = cmd(f'bash UE/route_init_1.sh', True)
 
 
+
+#!##############################################
+#   开始推流
+#!##############################################
+    #?-----------------------------------
+    time.sleep(10)
+    if config.IN_MEASUREMENT:
+        measure_insert('STREAM')
+    #?-----------------------------------
+
     # UE启动dn1上的游戏实例
     res = start_edge_game(1)
-
-
     # 启动到dn1的推流
     if res == 200:
         print('start game at edge success!')
@@ -79,28 +118,42 @@ if __name__ =="__main__":
         raise Exception(f'game start failed at Edge-1')
 
 
-    # =================================
-    #! 迁移时间计时点1
-    tm1= current_milli_time()
 
+
+
+
+
+
+
+
+#!##############################################
+#   接入bs2，pre-mig
+#!##############################################
     # 建立dn2的link
     addr = f'http://100.1.1.254:5000/setup_link/2/'
     ans = requests.get(addr).text
     if ans != '2':
         raise Exception('link to dn1 failed')
-
-
     # ue接入bs2
     res, t = cmd(f'bash UE/route_init_2-2.sh', True)
 
 
-    # # 启动dn2上的GA
-    # res = start_edge_ga(2)
+
+#!##############################################
+#   开始服务迁移
+#!##############################################
+    #?-----------------------------------
+    time.sleep(10)
+    if config.IN_MEASUREMENT:
+        measure_insert('MIGRATION')
+    #?-----------------------------------
+    # =================================
+    #! 迁移时间计时点1
+    tm1= current_milli_time()
+    # =================================
 
     # UE启动dn2上的游戏实例
     res = start_edge_game(2)
-
-
     # 启动到dn2的推流
     if res == 200:
         print('start game at edge success!')
@@ -108,21 +161,21 @@ if __name__ =="__main__":
     else:
         raise Exception(f'game start failed at Edge-2')
 
-
-
+    # =================================
     #! 迁移时间计时点1end
     tm1e= current_milli_time()
+    # =================================
+
 
     # sleep
-    wait(3, 'Streaming Game')
+    wait(5, 'Streaming Game')
 
 
-
+    # =================================
     # 开始录屏
-
-
     #! 迁移时间计时点2
     tm2= current_milli_time()
+    # =================================
 
 
     # r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4', (960, 540), logger=log)
@@ -130,43 +183,79 @@ if __name__ =="__main__":
     t=  Thread(target=r.run)
     t.start()
 
+    # =================================
     #! 迁移时间计时点2end
     tm2e= current_milli_time()
-        
+     # =================================
+
+
+
+
+
+
+
+#!##############################################
+#   开始switch
+#!##############################################
+    #?-----------------------------------
+    time.sleep(10)
+    if config.IN_MEASUREMENT:
+        measure_insert('SWITCH')
+    #?-----------------------------------
     # 运行几秒钟
     wait(2, 'Video Recording')
 
+    # =================================
     t1 = current_milli_time()
-
+    # =================================
     # 按F2 切换控制权限
     # sw.minetest_f2()
 
     # switch 窗口
     # sw.switch_window()
-    
-    
+
     # 允许视频流切换
     r.trigger_switch()
 
+    # =================================
     t2=current_milli_time()
+    # =================================
 
-    # # switch 窗口
-    # sw.switch_window()
 
-    # t = r.do_switch()
-    # print(f'downtime--->:{t}')
+
+
+
+
+
+
+
+
 
 
     # 运行几秒钟,让trigger部分运行起来
     wait(5, 'Triggering Switch')
 
-
+    # =================================
     tm3 = current_milli_time()
-
+    # =================================
     # 获取downtime
     t = r.get_downtime()
+    # =================================
     tm3e = current_milli_time()
+    # =================================
 
+
+
+
+
+#!##############################################
+#   服务迁移结束
+#!##############################################
+    #?-----------------------------------
+    time.sleep(10)
+    if config.IN_MEASUREMENT:
+        measure_insert('MIGRATION_END')
+    #?-----------------------------------
 
     #         切流   切窗口 
     t_down = t
@@ -193,3 +282,11 @@ if __name__ =="__main__":
     r.close()
 
 
+#!##############################################
+#   推流结束
+#!##############################################
+    #?-----------------------------------
+    time.sleep(10)
+    if config.IN_MEASUREMENT:
+        measure_end()
+    #?-----------------------------------
