@@ -2,7 +2,7 @@ from pynput.keyboard import Key, Controller
 import time
 
 import logging
-# current_milli_time = lambda: time.time() * 1000
+current_milli_time = lambda: time.time() * 1000
 
 
 
@@ -36,3 +36,21 @@ def minetest_f2():
     keyboard = Controller()
     keyboard.press(Key.f2)
     keyboard.release(Key.f2)
+
+
+
+
+if __name__ == "__main__":
+    
+    t1 = current_milli_time()
+
+    # 按F2 切换控制权限
+    # sw.minetest_f2()
+
+    # switch 窗口
+    switch_window()
+    
+
+    t2=current_milli_time()
+
+    print(t2-t1)

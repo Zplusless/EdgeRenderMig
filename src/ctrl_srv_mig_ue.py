@@ -142,7 +142,7 @@ if __name__ =="__main__":
     # sw.minetest_f2()
 
     # switch 窗口
-    sw.switch_window()
+    # sw.switch_window()
     
     
     # 允许视频流切换
@@ -168,10 +168,13 @@ if __name__ =="__main__":
     tm3e = current_milli_time()
 
 
-    t_down = t+t2-t1
+    #         切流   切窗口 
+    # t_down = t +  t2-t1
+    t_down = [t, t2-t1]
     # t_down = t
     #        连接bs启动游戏    双stream准备    允许切换
-    t_mig = (tm1e - tm1) + (tm2e - tm2) + (t2 - t1) + (tm3e - tm3)
+    # t_mig = (tm1e - tm1) + (tm2e - tm2) + (t2 - t1) + (tm3e - tm3)
+    t_mig = [(tm1e - tm1), (tm2e - tm2), (t2 - t1), (tm3e - tm3)]
 
     print(f'\nswitching downtime:{t_down}')
     print(f'\ntotal migration time: {t_mig}')

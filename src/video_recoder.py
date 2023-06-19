@@ -9,6 +9,8 @@ from logging import Logger
 from utils.timmer import current_milli_time, wait
 import config
 
+import utils.switch_window as sw
+
 
 from threading import Thread
 
@@ -170,6 +172,11 @@ class Recorder:
                         self.default_vg = temp
                         # frame1 = frame2
                         self.frame1 = self.frame2
+
+                        ################################
+                        sw.switch_window()
+                        ################################
+
 
                         self.t2 = current_milli_time()
                         self.down_time = self.t2-self.t1
