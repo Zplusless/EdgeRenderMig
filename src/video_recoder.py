@@ -36,7 +36,7 @@ class VideoGet:
     def get(self):
         # ptime = time.time()
         while not self.stopped:
-            time.sleep(1/self.fps)
+            # time.sleep(1/self.fps)
             if not self.grabbed:
                 self.stop()
             else:
@@ -68,6 +68,10 @@ class Recorder:
         self.frame1 = None
         self.frame2 = None
         self.ssim = None
+
+        # frame加权的权重
+        self.fw1 = 1
+        self.fw2 = 0
 
 
         # * write的size一定要一致
@@ -171,12 +175,19 @@ class Recorder:
                         self.copilot_vg = self.default_vg
                         self.default_vg = temp
                         # frame1 = frame2
+                        temp_f = self.frame1
                         self.frame1 = self.frame2
+                        self.frame2 = temp_f
 
                         ################################
                         sw.switch_window()
                         ################################
 
+
+                        #=================================
+                        self.fw2 = 1
+                        self.fw1 = 0
+                        #=================================
 
                         self.t2 = current_milli_time()
                         self.down_time = self.t2-self.t1
@@ -189,7 +200,20 @@ class Recorder:
 
                 now_time = time.time()
                 if (now_time-ptime)>=1/self.fps:
-                    self.out.write(self.frame1)
+
+                    #! 加权公式
+                    # dst=cv.addWeighted(src1, alpha, src2, beta, gamma[, dst[, dtype]])
+                    # dst = α*src1 + ß*src2 + γ
+                    out_frame = cv2.addWeighted(self.frame1, self.fw1, self.frame2, self.fw2, gamma=0)
+                    if self.fw1 <1:
+                        self.fw1 = self.fw1 + 1/config.TRANSITION_STEPS
+                        self.fw2 = self.fw2 - 1/config.TRANSITION_STEPS
+                    else:
+                        self.fw1 = 1
+                        self.fw2 = 0
+
+                    self.out.write(out_frame)
+                    # self.out.write(self.frame1)
                     print('-', end='')
                     ptime = time.time()
                 

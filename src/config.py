@@ -9,7 +9,9 @@ IN_DEPLOYMENT = False # True为实际部署，用gunicorn运行；False使用fla
 
 # =============================================
 # Game配置
-SSIM_THRESHOLD = 0.9
+SSIM_THRESHOLD = 0.8
+# 经过多少帧完成video record过程中视频帧加权平均的切换
+TRANSITION_STEPS = 12 # 24fps下
 
 
 
