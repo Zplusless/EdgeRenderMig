@@ -169,12 +169,12 @@ if __name__ =="__main__":
 
 
     #         切流   切窗口 
+    t_down = t
     # t_down = t +  t2-t1
-    t_down = [t, t2-t1]
-    # t_down = t
+    # t_down = [t, t2-t1]
     #        连接bs启动游戏    双stream准备    允许切换
-    # t_mig = (tm1e - tm1) + (tm2e - tm2) + (t2 - t1) + (tm3e - tm3)
-    t_mig = [(tm1e - tm1), (tm2e - tm2), (t2 - t1), (tm3e - tm3)]
+    t_mig = (tm1e - tm1) + (tm2e - tm2) + (t2 - t1) + (tm3e - tm3)
+    # t_mig = [(tm1e - tm1), (tm2e - tm2), (t2 - t1), (tm3e - tm3)]
 
     print(f'\nswitching downtime:{t_down}')
     print(f'\ntotal migration time: {t_mig}')
