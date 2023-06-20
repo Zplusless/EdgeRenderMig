@@ -13,7 +13,7 @@ IN_MEASUREMENT = False
 # Game配置
 SSIM_THRESHOLD = 0.8
 # 经过多少帧完成video record过程中视频帧加权平均的切换
-TRANSITION_STEPS = 12 # 24fps下
+TRANSITION_STEPS = 12 #! 最小为1，取1的时候不加平滑
 
 
 

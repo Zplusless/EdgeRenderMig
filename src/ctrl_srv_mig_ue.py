@@ -91,7 +91,7 @@ if __name__ =="__main__":
     # 建立dn1的link
     addr = f'http://100.1.1.254:5000/setup_link/1/'
     ans = requests.get(addr).text
-    print(ans, type(ans))
+    # print(ans, type(ans))
     if ans != '1':
         raise Exception('link to dn1 failed')
     # ue接入bs1
