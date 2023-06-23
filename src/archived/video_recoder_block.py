@@ -1,18 +1,24 @@
 # sudo apt install libopencv-dev python3-opencv
 # using v3.2.0 opencv on ubuntu-18.04, high version like 4.7.0 or 4.5.3 fail to work
 
+#! 本文件中，video的接收使用队列，且block=True，这样由于两个视频流启动不同步，队列中积累的帧也是不同步的。
+#! 导致后续接两个流之间切换的时候并不是对应帧在一起切换。因此，最优解是直接用frame变量传递帧，在写入的地方用sleep控制帧率
+
+
+
 import cv2 
 import time
 # from skimage.measure import  compare_ssim, compare_psnr, compare_mse
 from skimage.metrics import structural_similarity as compute_ssim
 from logging import Logger
 from utils.timmer import current_milli_time, wait
-import config
 
+import config
 import utils.switch_window as sw
 
 
 from threading import Thread
+import queue
 
 
 class VideoGet:
@@ -27,6 +33,7 @@ class VideoGet:
         self.stopped = False
         self.size = int(self.stream.get(cv2.CAP_PROP_FRAME_WIDTH)), int(self.stream.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.fps = int(self.stream.get(cv2.CAP_PROP_FPS)) 
+        self.frame_queue = queue.Queue()
         print(f'fps:--->{self.fps}')
 
     def start(self):    
@@ -41,6 +48,7 @@ class VideoGet:
                 self.stop()
             else:
                 self.grabbed, self.frame = self.stream.read()
+                self.frame_queue.put(self.frame)
                 # nowtime = time.time()
                 # (grabbed, frame) = self.stream.read()
                 # if (nowtime-ptime)>= 1/self.fps:
@@ -159,10 +167,22 @@ class Recorder:
                     break
                 
                 
-                # 保证都读到了frame
-                self.frame1 = self.default_vg.frame
-                self.frame2 = self.copilot_vg.frame
+                # # 保证都读到了frame
+                # self.frame1 = self.default_vg.frame
+                # self.frame2 = self.copilot_vg.frame
 
+                #!================================================
+                self.frame1 = self.default_vg.frame_queue.get(block=True)
+                self.frame2 = self.copilot_vg.frame_queue.get(block=True)
+
+                # if not (self.default_vg.frame_queue.empty() or self.copilot_vg.frame_queue.empty()):
+                #     self.frame1 = self.default_vg.frame_queue.get()
+                #     self.frame2 = self.copilot_vg.frame_queue.get()
+                # else:
+                #     continue # 读取数据快于网络接受速度
+                #!================================================
+
+                
 
                 if self.on_switching:
                     self.ssim = compute_ssim(self.frame1, self.frame2 , channel_axis=2, multichannel=True)
@@ -198,31 +218,39 @@ class Recorder:
                         print("\n\n========trigger switch!!=====")
                         print(f'after switching {id(self.default_vg)}<--->{id(self.copilot_vg)}')
 
+                #!=================================
+                # now_time = time.time()
+                # if (now_time-ptime)>=1/self.fps:
 
+                #     #! 加权公式
+                #     # dst=cv.addWeighted(src1, alpha, src2, beta, gamma[, dst[, dtype]])
+                #     # dst = α*src1 + ß*src2 + γ
+                #     out_frame = cv2.addWeighted(self.frame1, self.fw1, self.frame2, self.fw2, gamma=0)
+                #     if self.fw1 <1:
+                #         self.fw1 = self.fw1 + 1/config.TRANSITION_STEPS
+                #         self.fw2 = self.fw2 - 1/config.TRANSITION_STEPS
+                #     else:
+                #         self.fw1 = 1
+                #         self.fw2 = 0
 
+                #     self.out.write(out_frame)
+                #     # self.out.write(self.frame1)
+                #     print('-', end='')
+                #     ptime = time.time()
+                #!=================================
 
-
-                #! 如果video的接收使用队列，且block=True，这样由于两个视频流不是同时起步，队列中积累的帧也是不同步的。
-                #! 导致后续接两个流之间切换的时候并不是对应帧在一起切换。因此，最优解是直接用frame变量传递帧，在写入的地方用sleep控制帧率
-                now_time = time.time()
-                if (now_time-ptime)>=1/self.fps:
-
-                    #! 加权公式
-                    # dst=cv.addWeighted(src1, alpha, src2, beta, gamma[, dst[, dtype]])
-                    # dst = α*src1 + ß*src2 + γ
-                    out_frame = cv2.addWeighted(self.frame1, self.fw1, self.frame2, self.fw2, gamma=0)
-                    if self.fw1 <1:
-                        self.fw1 = self.fw1 + 1/config.TRANSITION_STEPS
-                        self.fw2 = self.fw2 - 1/config.TRANSITION_STEPS
-                    else:
-                        self.fw1 = 1
-                        self.fw2 = 0
-
-                    self.out.write(out_frame)
-                    # self.out.write(self.frame1)
-                    print('-', end='')
-                    ptime = time.time()
-                
+                #! 加权公式
+                # dst=cv.addWeighted(src1, alpha, src2, beta, gamma[, dst[, dtype]])
+                # dst = α*src1 + ß*src2 + γ
+                out_frame = cv2.addWeighted(self.frame1, self.fw1, self.frame2, self.fw2, gamma=0)
+                if self.fw1 <1:
+                    self.fw1 = self.fw1 + 1/config.TRANSITION_STEPS
+                    self.fw2 = self.fw2 - 1/config.TRANSITION_STEPS
+                else:
+                    self.fw1 = 1
+                    self.fw2 = 0
+                self.out.write(out_frame)
+                print('-', end='')
 
 
 
