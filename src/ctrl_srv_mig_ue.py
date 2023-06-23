@@ -52,41 +52,53 @@ def start_stream(dn_id, logfile=None):
 
 
 
-def measure_start():
-    url1 = f'http://{config.EDGE_NODE_IP_1}:10800/start/'
-    url2 = f'http://{config.EDGE_NODE_IP_2}:10800/start/'
-    res1 = requests.get(url1)
-    res2 = requests.get(url2)
-    return res1.status_code, res2.status_code
+def measure_start(target = [1,2]):
+    ans = [0, 0]
+    if isinstance(target, int):
+        target = [target]
+    if 1 in target:
+        url1 = f'http://{config.EDGE_NODE_IP_1}:10800/start/'
+        res1 = requests.get(url1)
+        ans[0] = res1.status_code
+    if 2 in target:
+        url2 = f'http://{config.EDGE_NODE_IP_2}:10800/start/'
+        res2 = requests.get(url2)
+        ans[1] = res2.status_code
+    return ans
 
+def measure_end(target = [1,2]):
+    ans = [0, 0]
+    if isinstance(target, int):
+        target = [target]
+    if 1 in target:
+        url1 = f'http://{config.EDGE_NODE_IP_1}:10800/end/'
+        res1 = requests.get(url1)
+        ans[0] = res1.status_code
+    if 2 in target:
+        url2 = f'http://{config.EDGE_NODE_IP_2}:10800/end/'
+        res2 = requests.get(url2)
+        ans[1] = res2.status_code
+    return ans
 
-def measure_end():
-    url1 = f'http://{config.EDGE_NODE_IP_1}:10800/end/'
-    url2 = f'http://{config.EDGE_NODE_IP_2}:10800/end/'
-    res1 = requests.get(url1)
-    res2 = requests.get(url2)
-    return res1.status_code, res2.status_code
+def measure_insert(msg:str, target=[1,2]):
+    ans = [0, 0]
 
-def measure_insert(msg:str):
+    if isinstance(target, int):
+        target = [target]
     if msg not in ['STREAM', 'MIGRATION', 'SWITCH', 'MIGRATION_END', 'STREAM_END']:
         raise Exception('wrong measure insert message')
-    url1 = f'http://{config.EDGE_NODE_IP_1}:10800/insert/{msg}/'
-    url2 = f'http://{config.EDGE_NODE_IP_2}:10800/insert/{msg}/'
-    res1 = requests.get(url1)
-    res2 = requests.get(url2)
-    return res1.status_code, res2.status_code
+    if 1 in target:
+        url1 = f'http://{config.EDGE_NODE_IP_1}:10800/insert/{msg}/'
+        res1 = requests.get(url1)
+        ans[0] = res1.status_code
+    if 2 in target:
+        url2 = f'http://{config.EDGE_NODE_IP_2}:10800/insert/{msg}/'
+        res2 = requests.get(url2)
+        ans[1] = res2.status_code
+    return ans
 
 
 if __name__ =="__main__":
-
-
-#!##############################################
-#   实验开始
-#!##############################################
-    #?-----------------------------------
-    if config.IN_MEASUREMENT:
-        measure_start()
-    #?-----------------------------------
 
     # 建立dn1的link
     addr = f'http://100.1.1.254:5000/setup_link/1/'
@@ -100,12 +112,13 @@ if __name__ =="__main__":
 
 
 #!##############################################
-#   开始推流
+#   开始推流dn1
 #!##############################################
     #?-----------------------------------
-    time.sleep(10)
+    # time.sleep(10)
     if config.IN_MEASUREMENT:
-        measure_insert('STREAM')
+        wait(10, msg='stream dn1')
+        measure_insert('STREAM', target=1)
     #?-----------------------------------
 
     # UE启动dn1上的游戏实例
@@ -140,11 +153,22 @@ if __name__ =="__main__":
 
 
 #!##############################################
+#   开始推流dn2
+#!##############################################
+    #?-----------------------------------
+    # time.sleep(10)
+    if config.IN_MEASUREMENT:
+        wait(2, msg='stream dn2')
+        measure_insert('STREAM', target=2)
+    #?-----------------------------------
+
+#!##############################################
 #   开始服务迁移
 #!##############################################
     #?-----------------------------------
-    time.sleep(10)
+    # time.sleep(10)
     if config.IN_MEASUREMENT:
+        wait(5, msg='wait for migtration start')
         measure_insert('MIGRATION')
     #?-----------------------------------
     # =================================
@@ -198,8 +222,8 @@ if __name__ =="__main__":
 #   开始switch
 #!##############################################
     #?-----------------------------------
-    time.sleep(10)
     if config.IN_MEASUREMENT:
+        wait(10, msg='waiting for switch')
         measure_insert('SWITCH')
     #?-----------------------------------
     # 运行几秒钟
@@ -252,8 +276,8 @@ if __name__ =="__main__":
 #   服务迁移结束
 #!##############################################
     #?-----------------------------------
-    time.sleep(10)
     if config.IN_MEASUREMENT:
+        wait(10, msg='migration end')
         measure_insert('MIGRATION_END')
     #?-----------------------------------
 
@@ -280,13 +304,31 @@ if __name__ =="__main__":
 
     # 停止记录
     r.close()
+#!##############################################
+#   stream结束
+#!##############################################
+    #?-----------------------------------
+    if config.IN_MEASUREMENT:
+        wait(2, msg='stream end')
+        measure_insert('STREAM_END')
+    #?-----------------------------------
 
 
 #!##############################################
 #   推流结束
 #!##############################################
     #?-----------------------------------
-    time.sleep(10)
     if config.IN_MEASUREMENT:
+        wait(10, msg='measure end')
         measure_end()
     #?-----------------------------------
+
+
+#!##############################################
+#   初始化下次测量
+#!##############################################
+    # #?-----------------------------------
+    if config.IN_MEASUREMENT:
+        wait(2,msg='init measure for next round')
+        measure_start()
+    # #?-----------------------------------
