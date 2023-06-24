@@ -9,6 +9,10 @@ IN_DEPLOYMENT = False # True为实际部署，用gunicorn运行；False使用fla
 # 是否测量edge测的cpu和带宽
 IN_MEASUREMENT = False
 
+# 是否测试in app 时延
+IN_APP_LATENCY = False
+IN_APP_LATENCY_INTERVAL = 0.5 # 秒
+
 # =============================================
 # Game配置
 SSIM_THRESHOLD = 0.85

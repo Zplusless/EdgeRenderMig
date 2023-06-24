@@ -195,6 +195,10 @@ if __name__ =="__main__":
     wait(5, 'Streaming Game')
 
 
+    # 切换到dn1的窗口，因为dn2后出来，经常覆盖了dn1，造成主窗口在后，副窗口在前
+    sw.switch_window()
+
+
     # =================================
     # 开始录屏
     #! 迁移时间计时点2
@@ -212,7 +216,8 @@ if __name__ =="__main__":
     tm2e= current_milli_time()
      # =================================
 
-
+    if config.IN_APP_LATENCY:
+        wait(10, 'in app latency')
 
 
 

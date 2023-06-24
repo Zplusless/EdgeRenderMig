@@ -37,6 +37,13 @@ def minetest_f2():
     keyboard.press(Key.f2)
     keyboard.release(Key.f2)
 
+def press_esc():
+    '''
+    minetest中用于按esc跳出菜单栏
+    '''
+    keyboard = Controller()
+    keyboard.press(Key.esc)
+    keyboard.release(Key.esc)
 
 
 

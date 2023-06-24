@@ -97,6 +97,10 @@ class Recorder:
 
         self.end = False
 
+        # 用于in app latency的测量
+        self.in_app_ptime = 0
+        self.show_text = False
+
 
 
     # def init_cap(self, url):
@@ -181,6 +185,8 @@ class Recorder:
 
                         ################################
                         sw.switch_window()
+                        self.show_text = False  # 切换到2号流后默认是没有菜单的，故应该为false
+                        self.in_app_ptime = time.time()
                         ################################
 
 
@@ -217,6 +223,22 @@ class Recorder:
                     else:
                         self.fw1 = 1
                         self.fw2 = 0
+
+
+                    # 用于测量in-app latency
+                    if config.IN_APP_LATENCY:
+                        if self.default_vg == self.vg1:
+                            cv2.putText(out_frame, '1', (700, 80), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 255, 0), thickness = 3)
+                        else:
+                            cv2.putText(out_frame, '2', (700, 80), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 255, 0), thickness = 5)
+                        if now_time - self.in_app_ptime > config.IN_APP_LATENCY_INTERVAL:
+                            sw.press_esc()
+                            self.show_text = (self.show_text==False)  # True False交替出现
+                            self.in_app_ptime = now_time
+
+                    if self.show_text:
+                        # https://docs.opencv.org/4.x/d6/d6e/group__imgproc__draw.html#ga5126f47f883d730f633d74f07456c576   
+                        cv2.putText(out_frame, 'ESC Pressed', (10, 80), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 255, 0), thickness = 5)
 
                     self.out.write(out_frame)
                     # self.out.write(self.frame1)
