@@ -11,7 +11,7 @@ IN_MEASUREMENT = False
 
 # =============================================
 # Game配置
-SSIM_THRESHOLD = 0.8
+SSIM_THRESHOLD = 0.85
 # 经过多少帧完成video record过程中视频帧加权平均的切换
 TRANSITION_STEPS = 12 #! 最小为1，取1的时候不加平滑
 
@@ -60,7 +60,7 @@ UE_UPLOAD_FILE = './UE/example.mp4'
 
 # =============================================
 # 连接时延参数, 带宽参数
-# 此处的时延为单向时延，等于TTL的一半
+# 此处的时延为单向时延，等于RTT的一半
 # 时延参数太小的时候会不准
 DELAY_UE_RAN = '1ms'
 BW_UE_RAN = 1000  # 200 # Mbps
