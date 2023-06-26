@@ -103,7 +103,7 @@ class SrvMigTopo(Topo):
                                     intfName1='ran1-eth0', 
                                     params1={'ip': '100.1.1.254/24',
                                             'bw':config.BW_UE_RAN, 
-                                            'delay':config.DELAY_UE_RAN, 
+                                            'delay':config.DELAY_UE_RAN1, 
                                             'loss':config.LOSS_UE_RAN,
                                             'use_htb':True})  # loss算单条连接
 
@@ -111,7 +111,7 @@ class SrvMigTopo(Topo):
                                     intfName1='ran2_1-eth0', 
                                     params1={'ip': '100.2.1.254/24',
                                             'bw':config.BW_UE_RAN, 
-                                            'delay':config.DELAY_UE_RAN, 
+                                            'delay':config.DELAY_UE_RAN2, 
                                             'loss':config.LOSS_UE_RAN,
                                             'use_htb':True})  # loss算单条连接
 
@@ -120,7 +120,7 @@ class SrvMigTopo(Topo):
                                     intfName1='ran2_2-eth0', 
                                     params1={'ip': '100.2.1.253/24',
                                             'bw':config.BW_UE_RAN, 
-                                            'delay':config.DELAY_UE_RAN, 
+                                            'delay':config.DELAY_UE_RAN2, 
                                             'loss':config.LOSS_UE_RAN,
                                             'use_htb':True})  # loss算单条连接
 
@@ -162,7 +162,7 @@ class SrvMigTopo(Topo):
                                 intfName1='ue-eth0', 
                                 params1={'ip': "100.1.1.1/24", 
                                 'bw':config.BW_UE_RAN, 
-                                'delay':config.DELAY_UE_RAN, 
+                                'delay':config.DELAY_UE_RAN1, 
                                 'loss':config.LOSS_UE_RAN,
                                 'use_htb':True})
 
@@ -170,7 +170,7 @@ class SrvMigTopo(Topo):
                                 intfName1='ue-eth1', 
                                 params1={'ip': "100.2.1.1/24",
                                         'bw':config.BW_UE_RAN, 
-                                        'delay':config.DELAY_UE_RAN, 
+                                        'delay':config.DELAY_UE_RAN2, 
                                         'loss':config.LOSS_UE_RAN,
                                         'use_htb':True})
 

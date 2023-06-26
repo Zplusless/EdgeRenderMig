@@ -10,8 +10,8 @@ IN_DEPLOYMENT = False # True为实际部署，用gunicorn运行；False使用fla
 IN_MEASUREMENT = False
 
 # 是否测试in app 时延
-IN_APP_LATENCY = False
-IN_APP_LATENCY_INTERVAL = 0.5 # 秒
+IN_APP_LATENCY = True
+IN_APP_LATENCY_INTERVAL = 0.3 # 秒  #! gaminganywhere中的帧率要调整为支持的最大值120fps
 
 # =============================================
 # Game配置
@@ -79,6 +79,13 @@ DELAY_INTER_CLUSTER = '3ms'
 BW_INTER_CLUSTER = 1000 # Mbps
 LOSS_INTER_CLUSTER = None
 
+
+if IN_APP_LATENCY: # 测in app latency的情况下，两边rtt不一样
+    DELAY_UE_RAN1 = '7ms'
+    DELAY_UE_RAN2 = '1ms'
+else:
+    DELAY_UE_RAN1 = DELAY_UE_RAN
+    DELAY_UE_RAN2 = DELAY_UE_RAN
 
 
 
