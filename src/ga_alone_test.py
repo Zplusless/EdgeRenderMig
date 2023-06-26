@@ -12,8 +12,10 @@ from threading import Thread
 res, t1 = cmd(f"~/minetest/bin/minetest --address {config.CLOUD_IP} --port 30000 --name {config.GAME_ACCOUNT} --password {config.GAME_PASSWORD} --go", False)
 
 # 进行esc录屏
-r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4')# , (800, 600))
+r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_1, f'ue_log/srv_mig_{hms()}.mp4')# , (800, 600))
 t=  Thread(target=r.run)
 t.start()
 
 wait(15, msg='running')
+r.close()
+print('end\n\n')
