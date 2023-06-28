@@ -8,7 +8,7 @@
 # https://docs.python.org/3.6/library/multiprocessing.html#exchanging-objects-between-processes
 # 使用Value传递数据https://blog.csdn.net/bqw18744018044/article/details/104739000
 
-#todo 进程无法正常退出， 帧率仍然上不去
+#todo 帧率仍然上不去
 
 
 
@@ -18,7 +18,7 @@ from PIL import ImageGrab
 import cv2
 import time
 from threading import Thread
-from multiprocessing import Process, Queue, Value
+from multiprocessing import Process, Queue, Value, Manager
 
 from utils.call_cmd import cmd
 from utils.timmer import wait,hms
@@ -44,7 +44,7 @@ class VideoGet:
             self.fps = self.max_fps
         print(f'实际录屏帧率：{self.fps}')
         # self.frame = cv2.cvtColor(np.array(im), cv2.COLOR_BGR2RGB)
-        self.frame_queue = Queue()
+        self.frame_queue = Manager().Queue() 
 
         # self.stream = cv2.VideoCapture(src)
         # (self.grabbed, self.frame) = self.stream.read()
@@ -73,12 +73,14 @@ class VideoGet:
     def get(self):
         ptime = time.time()
         while self.stopped.value!=1:
-            nowtime = time.time()
-            # if (nowtime-ptime)>= 1/(self.fps*2): # 以2倍fps进行采样
-            if (nowtime-ptime)>=1/(self.fps*1.2):
-                self.frame = self.next_frame()
-                self.frame_queue.put(self.frame)
-                ptime = nowtime
+            # nowtime = time.time()
+            # # if (nowtime-ptime)>= 1/(self.fps*2): # 以2倍fps进行采样
+            # if (nowtime-ptime)>=1/(self.fps*1.2):
+            #     self.frame = self.next_frame()
+            #     self.frame_queue.put(self.frame)
+            #     ptime = nowtime
+            self.frame = self.next_frame()
+            self.frame_queue.put(self.frame)
 
             if time.time() - self.start_time.value > self.length.value:
                 break
@@ -98,7 +100,7 @@ class VideoGet:
 
 
 class LocalRecorder:
-    def __init__(self, path:str, length=20, fps=24) -> None:
+    def __init__(self, path:str, length=20, fps=120) -> None:
         fourcc = cv2.VideoWriter_fourcc(*'avc1')  # 设置视频编码格式
         # self.fps = fps # 设置帧率
         # init只是给出期望帧率，VideoGet返回的是实际帧率
