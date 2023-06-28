@@ -19,11 +19,27 @@ import cv2
 import time
 from threading import Thread
 from multiprocessing import Process, Queue, Value, Manager
+import socket
+import logging
+
 
 from utils.call_cmd import cmd
 from utils.timmer import wait,hms
 import utils.switch_window as sw
 import config
+
+
+hostname = socket.gethostname()
+logging.basicConfig(
+    level=logging.INFO, 
+    format= f'%(asctime)s - {hostname} - %(levelname)s - %(message)s', #'%(asctime)s - %(levelname)s - %(message)s',
+    filename='node_log/record_screen.log',
+    filemode='a',##模式，有w和a，w就是写模式，每次都会重新写日志，覆盖之前的日志
+    )
+log = logging.getLogger('record_screen')
+
+
+
 
 class VideoGet:
     """
@@ -37,12 +53,13 @@ class VideoGet:
         im = ImageGrab.grab()
         self.size = im.size
 
-        self.max_fps = self.test_max_fps()
-        if 0<fps<=self.max_fps:
-            self.fps = fps
-        else:
-            self.fps = self.max_fps
-        print(f'实际录屏帧率：{self.fps}')
+        self.max_fps,_ = self.next_frame()
+        # if 0<fps<=self.max_fps:
+        #     self.fps = fps
+        # else:
+        #     self.fps = self.max_fps
+        self.fps = fps
+        # print(f'实际录屏帧率：{self.fps}')
         # self.frame = cv2.cvtColor(np.array(im), cv2.COLOR_BGR2RGB)
         self.frame_queue = Manager().Queue() 
 
@@ -53,22 +70,24 @@ class VideoGet:
         # self.fps = int(self.stream.get(cv2.CAP_PROP_FPS)) 
         # print(f'fps:--->{self.fps}')
 
-    def test_max_fps(self):
+    # def test_max_fps(self):
+    #     t1 = time.time()
+    #     im = ImageGrab.grab()
+    #     im_cv = cv2.cvtColor(np.array(im), cv2.COLOR_BGR2RGB)
+    #     t = time.time()-t1
+    #     return 1/t
+
+    def next_frame(self):
         t1 = time.time()
         im = ImageGrab.grab()
         im_cv = cv2.cvtColor(np.array(im), cv2.COLOR_BGR2RGB)
         t = time.time()-t1
-        return 1/t
-
-    def next_frame(self):
-        im = ImageGrab.grab()
-        im_cv = cv2.cvtColor(np.array(im), cv2.COLOR_BGR2RGB)
-        return im_cv
+        return 1/t, im_cv
 
     def start(self):    
         self.start_time = Value('d', time.time())
         Process(target=self.get, args=()).start()
-        return self, self.fps, self.size
+        return self, self.size
 
     def get(self):
         ptime = time.time()
@@ -79,7 +98,11 @@ class VideoGet:
             #     self.frame = self.next_frame()
             #     self.frame_queue.put(self.frame)
             #     ptime = nowtime
-            self.frame = self.next_frame()
+            fps, self.frame = self.next_frame()
+            log.info(fps)
+            # if fps<self.fps-10:
+            #     raise Exception(f'录屏fps={fps}小于设定fps')
+
             self.frame_queue.put(self.frame)
 
             if time.time() - self.start_time.value > self.length.value:
@@ -104,7 +127,8 @@ class LocalRecorder:
         fourcc = cv2.VideoWriter_fourcc(*'avc1')  # 设置视频编码格式
         # self.fps = fps # 设置帧率
         # init只是给出期望帧率，VideoGet返回的是实际帧率
-        self.capture, self.fps, self.size = VideoGet(fps, length=length).start()
+        self.capture, self.size = VideoGet(fps, length=length).start()
+        self.fps = fps
         self.writer = cv2.VideoWriter(path, fourcc, self.fps, self.size)
         self.length = length
         self.is_running=True
@@ -122,7 +146,7 @@ class LocalRecorder:
             # im_cv = cv2.cvtColor(np.array(im), cv2.COLOR_BGR2RGB)
             # 图像写入
             nowtime = time.time()
-            if (nowtime-ptime)>=1/(self.fps*1.2):
+            if (nowtime-ptime)>=1/(self.fps):
                 frame = self.capture.read()
                 if nowtime - in_app_ptime > config.IN_APP_LATENCY_INTERVAL:
                     # print(nowtime - in_app_ptime)
