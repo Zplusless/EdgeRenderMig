@@ -4,11 +4,12 @@
 
 
 #! 由于此处videoGet不是io操作，而是cpu密集的，因此会收到GIL的限制，录屏帧率上不去。
-# 多进程分享数据，使用多进程的Queue传递数据
-# https://docs.python.org/3.6/library/multiprocessing.html#exchanging-objects-between-processes
-# 使用Value传递数据https://blog.csdn.net/bqw18744018044/article/details/104739000
+# 多进程分享数据，使用多进程的Manager传递数据
+# https://docs.python.org/3.6/library/multiprocessing.html#sharing-state-between-processes
 
-#todo 帧率仍然上不去
+
+# 前几个commit中帧率上不去是因为VideoGet中录屏需要warm up，在init阶段拿到的帧率普遍偏小，因而限制了整体的fps
+# 本commit中取消了Queue而是采用Manager中的数据共享，缓冲区大小只有1，没有读取的会被后面覆盖，避免了写（200+fps）快于读（120fps）造成的esc水印与esc弹出menu不同步。
 
 
 
@@ -18,7 +19,7 @@ from PIL import ImageGrab
 import cv2
 import time
 from threading import Thread
-from multiprocessing import Process, Queue, Value, Manager
+from multiprocessing import Process, Value, Manager
 import socket
 import logging
 
@@ -61,11 +62,12 @@ class VideoGet:
         self.fps = fps
         # print(f'实际录屏帧率：{self.fps}')
         # self.frame = cv2.cvtColor(np.array(im), cv2.COLOR_BGR2RGB)
-        self.frame_queue = Manager().Queue() 
+        self.data_manager = Manager()
+        self.shared_data = self.data_manager.dict()
 
         # self.stream = cv2.VideoCapture(src)
         # (self.grabbed, self.frame) = self.stream.read()
-        self.stopped = Value('i', 0) #! 使用进程共享的变量，否则后面stop失效
+        self.shared_data['running'] = True #! 使用进程共享的变量，否则后面stop失效
         
         # self.fps = int(self.stream.get(cv2.CAP_PROP_FPS)) 
         # print(f'fps:--->{self.fps}')
@@ -91,7 +93,7 @@ class VideoGet:
 
     def get(self):
         ptime = time.time()
-        while self.stopped.value!=1:
+        while self.shared_data['running']:
             # nowtime = time.time()
             # # if (nowtime-ptime)>= 1/(self.fps*2): # 以2倍fps进行采样
             # if (nowtime-ptime)>=1/(self.fps*1.2):
@@ -103,27 +105,29 @@ class VideoGet:
             # if fps<self.fps-10:
             #     raise Exception(f'录屏fps={fps}小于设定fps')
 
-            self.frame_queue.put(self.frame)
+            self.shared_data['data'] = self.frame
 
             if time.time() - self.start_time.value > self.length.value:
+                print(f'{self.__class__}: time exceeded, end process')
                 break
             
         print('Screen recording process stopped!')
+
   
 
     def read(self):
-        return self.frame_queue.get()
+        return self.shared_data['data']
             
 
     def stop(self):
-        self.stopped.value = 1
+        self.shared_data['running'] = False
 
 
 
 
 
 class LocalRecorder:
-    def __init__(self, path:str, length=20, fps=120) -> None:
+    def __init__(self, path:str, length=30, fps=120) -> None:
         fourcc = cv2.VideoWriter_fourcc(*'avc1')  # 设置视频编码格式
         # self.fps = fps # 设置帧率
         # init只是给出期望帧率，VideoGet返回的是实际帧率
@@ -136,6 +140,9 @@ class LocalRecorder:
         
 
     def run(self):
+
+        time.sleep(1) # 等待录屏进程开始写入
+
         ptime = time.time()
         t_start = ptime
         in_app_ptime = ptime
@@ -179,13 +186,13 @@ class LocalRecorder:
 
 if __name__ == "__main__":
     # 启动游戏
-    res, t1 = cmd(f"~/minetest/bin/minetest --address {config.CLOUD_IP} --port 30000 --name {config.GAME_ACCOUNT} --password {config.GAME_PASSWORD} --go", False, logfile='ue_log/minetest.log')
+    res, t1 = cmd(f"~/minetest/bin/minetest --address {config.CLOUD_IP} --port 30000 --name {config.GAME_ACCOUNT} --password {config.GAME_PASSWORD} --go", False, logfile='node_log/minetest_output.log')
     time.sleep(3)
     r = LocalRecorder(f'ue_log/srv_mig_{hms()}.mp4', fps=120)
     t = Thread(target=r.run)
     t.start()
 
     # wait(15, msg='running')
-    time.sleep(15)
+    time.sleep(16)  # run会先等1s让VideoGet那边有数据写入
     r.close()
     print('end\n\n')
