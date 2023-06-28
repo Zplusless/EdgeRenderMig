@@ -178,6 +178,7 @@ class LocalRecorder:
     def release(self):
         self.writer.release()
         self.capture.stop()
+        time.sleep(1)# 避免主进程比子进程早结束，出现broken pipe
         print('release cv writer, end!')
 
     def close(self):
