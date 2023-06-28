@@ -1,5 +1,6 @@
 # 本文件用于在dn上直接运行GA并进行in app latency的测试，即在本地进行esc发时延测量
-# 用于测量ga本身的menu弹出时延
+# 总时延=网络时延+GA时延+mintest时延，本文测量结果包含后两者
+# 用于测量ga的本身的menu弹出时延
 
 import config
 from utils.call_cmd import cmd
