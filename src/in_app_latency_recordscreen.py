@@ -116,6 +116,7 @@ class LocalRecorder:
         t_start = ptime
         in_app_ptime = ptime
         count = 0
+        print(f'self.fps={self.fps}')
         while self.is_running:  # 开始录制
             # im = ImageGrab.grab()
             # im_cv = cv2.cvtColor(np.array(im), cv2.COLOR_BGR2RGB)
@@ -138,8 +139,8 @@ class LocalRecorder:
             
             if time.time()-t_start>=self.length:  # 当某某条件满足中断循环
                 break
-        
-        print(f'录制结束，共录制{time.time()-t_start}秒, 总帧数为{count}')
+        tt = time.time()-t_start
+        print(f'录制结束，共录制{tt}秒, 总帧数为{count}, 实际fps{count/tt}')
         self.release()
 
 
