@@ -3,9 +3,14 @@
 # 用于测量ga的本身的menu弹出时延
 
 
-#todo 由于此处videoGet不是io操作，而是cpu密集的，因此会收到GIL的限制，录屏帧率上不去。
-#todo 多进程分享数据，参考https://blog.csdn.net/weixin_41457494/article/details/103637858
-# https://towardsdatascience.com/python-concurrency-multiprocessing-327c02544a5a
+#! 由于此处videoGet不是io操作，而是cpu密集的，因此会收到GIL的限制，录屏帧率上不去。
+# 多进程分享数据，使用多进程的Queue传递数据
+# https://docs.python.org/3.6/library/multiprocessing.html#exchanging-objects-between-processes
+# 使用Value传递数据https://blog.csdn.net/bqw18744018044/article/details/104739000
+
+#todo 进程无法正常退出， 帧率仍然上不去
+
+
 
 
 import numpy as np
@@ -13,6 +18,7 @@ from PIL import ImageGrab
 import cv2
 import time
 from threading import Thread
+from multiprocessing import Process, Queue, Value
 
 from utils.call_cmd import cmd
 from utils.timmer import wait,hms
@@ -25,7 +31,9 @@ class VideoGet:
     with a dedicated thread.
     """
 
-    def __init__(self, fps:int):
+    def __init__(self, fps:int, length):
+        self.length = Value('d', length)
+
         im = ImageGrab.grab()
         self.size = im.size
 
@@ -35,11 +43,12 @@ class VideoGet:
         else:
             self.fps = self.max_fps
         print(f'实际录屏帧率：{self.fps}')
-        self.frame = cv2.cvtColor(np.array(im), cv2.COLOR_BGR2RGB)
+        # self.frame = cv2.cvtColor(np.array(im), cv2.COLOR_BGR2RGB)
+        self.frame_queue = Queue()
 
         # self.stream = cv2.VideoCapture(src)
         # (self.grabbed, self.frame) = self.stream.read()
-        self.stopped = False
+        self.stopped = Value('i', 0) #! 使用进程共享的变量，否则后面stop失效
         
         # self.fps = int(self.stream.get(cv2.CAP_PROP_FPS)) 
         # print(f'fps:--->{self.fps}')
@@ -57,27 +66,43 @@ class VideoGet:
         return im_cv
 
     def start(self):    
-        Thread(target=self.get, args=()).start()
+        self.start_time = Value('d', time.time())
+        Process(target=self.get, args=()).start()
         return self, self.fps, self.size
 
     def get(self):
         ptime = time.time()
-        while not self.stopped:
+        while self.stopped.value!=1:
             nowtime = time.time()
             # if (nowtime-ptime)>= 1/(self.fps*2): # 以2倍fps进行采样
             if (nowtime-ptime)>=1/(self.fps*1.2):
                 self.frame = self.next_frame()
+                self.frame_queue.put(self.frame)
                 ptime = nowtime
+
+            if time.time() - self.start_time.value > self.length.value:
+                break
+            
+        print('Screen recording process stopped!')
   
+
+    def read(self):
+        return self.frame_queue.get()
+            
+
     def stop(self):
-        self.stopped = True
+        self.stopped.value = 1
+
+
+
+
 
 class LocalRecorder:
     def __init__(self, path:str, length=20, fps=24) -> None:
         fourcc = cv2.VideoWriter_fourcc(*'avc1')  # 设置视频编码格式
         # self.fps = fps # 设置帧率
         # init只是给出期望帧率，VideoGet返回的是实际帧率
-        self.capture, self.fps, self.size = VideoGet(fps).start()
+        self.capture, self.fps, self.size = VideoGet(fps, length=length).start()
         self.writer = cv2.VideoWriter(path, fourcc, self.fps, self.size)
         self.length = length
         self.is_running=True
@@ -95,11 +120,12 @@ class LocalRecorder:
             # 图像写入
             nowtime = time.time()
             if (nowtime-ptime)>=1/(self.fps*1.2):
-                frame = self.capture.frame
+                frame = self.capture.read()
                 if nowtime - in_app_ptime > config.IN_APP_LATENCY_INTERVAL:
+                    # print(nowtime - in_app_ptime)
                     sw.press_esc()
                     self.show_text = (self.show_text==False)  # True False交替出现
-                    self.in_app_ptime = time.time()
+                    in_app_ptime = time.time()
                 if self.show_text:
                     # https://docs.opencv.org/4.x/d6/d6e/group__imgproc__draw.html#ga5126f47f883d730f633d74f07456c576   
                     cv2.putText(frame, 'ESC Pressed', (10, 80), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (255, 255, 0), thickness = 5)
@@ -113,6 +139,7 @@ class LocalRecorder:
         
         print(f'录制结束，共录制{time.time()-t_start}秒, 总帧数为{count}')
         self.release()
+
 
     def release(self):
         self.writer.release()
