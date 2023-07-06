@@ -50,6 +50,11 @@ def start_stream(dn_id, logfile=None):
     pid, t, _ = cmd(command, False, logfile=logfile)
     return res
 
+def end_minetest(edge_id):
+    addr = f'http://192.168.1.{edge_id}:8000/stop_game/'
+    res = requests.get(addr)
+    return res.status_code
+
 
 
 def measure_start(target = [1,2]):
@@ -128,6 +133,7 @@ if __name__ =="__main__":
         print('start game at edge success!')
         start_stream(1, 'node_log/Stream_log_1.log')
     else:
+        print(res)
         raise Exception(f'game start failed at Edge-1')
 
 
@@ -326,6 +332,7 @@ if __name__ =="__main__":
         wait(10, msg='measure end')
         measure_end()
     #?-----------------------------------
+    end_minetest(1)
 
 
 #!##############################################
