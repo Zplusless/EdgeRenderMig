@@ -47,7 +47,7 @@ def start_edge_ga(edge_id):
 
 def start_stream(dn_id, logfile=None):
     command = f'cd /home/edge/gaminganywhere-master/bin && ./ga-client config/client.abs.conf rtsp://192.168.1.{dn_id}:8554/desktop'
-    res, t = cmd(command, False, logfile=logfile)
+    pid, t, _ = cmd(command, False, logfile=logfile)
     return res
 
 
@@ -107,7 +107,7 @@ if __name__ =="__main__":
     if ans != '1':
         raise Exception('link to dn1 failed')
     # ue接入bs1
-    res, t = cmd(f'bash UE/route_init_1.sh', True)
+    pid, t, _ = cmd(f'bash UE/route_init_1.sh', True)
 
 
 
@@ -148,7 +148,7 @@ if __name__ =="__main__":
     if ans != '2':
         raise Exception('link to dn1 failed')
     # ue接入bs2
-    res, t = cmd(f'bash UE/route_init_2-2.sh', True)
+    pid, t, _ = cmd(f'bash UE/route_init_2-2.sh', True)
 
 
 

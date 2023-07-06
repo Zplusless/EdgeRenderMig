@@ -116,7 +116,7 @@ def run_client(dn_id):
         print('start GA client')
         # dn = request.form.get('dn_id')
         command = f'cd /home/edge/gaminganywhere-master/bin && ./ga-client config/client.abs.conf rtsp://192.168.1.{dn_id}:8554/desktop'
-        res, t = cmd(command, False)
+        pid, t, _ = cmd(command, False)
     else:
         raise Exception(f'game start failed at Edge-{dn_id}')
 
@@ -124,13 +124,13 @@ def run_client(dn_id):
 
 @ue_app.route('/switch_bs/<target_bs>/')
 def switch_bs(target_bs):
-    res, t = cmd(f'bash UE/route_to_{target_bs}.sh', True)
+    pid, t, _ = cmd(f'bash UE/route_to_{target_bs}.sh', True)
 
     return str(t)
 
 @ue_app.route('/init_bs/<bs_id>/')
 def init_bs(bs_id):
-    res, t = cmd(f'bash UE/route_init_{bs_id}.sh', True)
+    pid, t, _ = cmd(f'bash UE/route_init_{bs_id}.sh', True)
 
     return str(t)
 

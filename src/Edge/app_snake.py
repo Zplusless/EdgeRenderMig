@@ -26,7 +26,7 @@ def run_game():
     print(name, ip, port)
 
     # 启动游戏
-    res, t1 = cmd(f'python Edge/Snakepygame.py -n {name} -i {ip} -p {port} &', False)
+    pid, t1, _ = cmd(f'python Edge/Snakepygame.py -n {name} -i {ip} -p {port} &', False)
 
 
     return 'done'
@@ -39,7 +39,7 @@ def run_ga():
 
     # 启动GA
     # todo 修改配置文件，锁定游戏窗口 https://gaminganywhere.org/doc/quick_start.html
-    res, t2 = cmd('bash Edge/start_game.sh &', False) # 此处如果为True会一直等待GA运行结束才返回，造成http超时
+    pid, t2, _ = cmd('bash Edge/start_game.sh &', False) # 此处如果为True会一直等待GA运行结束才返回，造成http超时
 
     return 'done'
 

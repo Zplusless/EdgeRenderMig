@@ -17,7 +17,7 @@ def cmd(cmd, record_time:bool, logfile:str=None):
         Exception: invalid cmd
 
     Returns:
-        ans: stdout of shell command
+        ans: stdout of shell command if record_time=True, else return pid
         t: miliseconds used to execute the cmd 
     """
     
@@ -41,15 +41,15 @@ def cmd(cmd, record_time:bool, logfile:str=None):
         t2 = time.time()*1000
         if logfile:
             target.close()
-        return ans, t2-t1
+        return proc.pid, t2-t1, ans
     else:
         if logfile:
             target.close()
-        return '', -1
+        return proc.pid, -1, ''
 
 
 if __name__ == '__main__':
-    ans, t = cmd('sleep 4 && ls', record_time=False, logfile='ue_log/test.txt')
+    pid, t, _ = cmd('sleep 4 && ls', record_time=False, logfile='ue_log/test.txt')
     # ans, t = cmd('sleep 4 && ls', record_time=True)
     print(t)
     # Popen('ls', shell = True)
