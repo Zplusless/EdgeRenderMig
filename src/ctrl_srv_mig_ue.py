@@ -346,6 +346,7 @@ if __name__ =="__main__":
         measure_insert('STREAM_END')
     #?-----------------------------------
     sw.minetest_f2()  # 保证dn1被kill之后，dn2是有控制权的，不会原地晃动
+    sw.switch_window()  # dn2的画面在前方，避免dn1的断网画面出现
     end_minetest(1)
 
 
