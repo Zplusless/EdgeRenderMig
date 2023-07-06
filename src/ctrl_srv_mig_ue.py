@@ -225,11 +225,11 @@ if __name__ =="__main__":
     tm2= current_milli_time()
     # =================================
 
-
+    if not config.IN_MEASUREMENT: #! overhead测量的时候，不进行opencv录屏，否则引入额外流量
     # r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4', (960, 540), logger=log)
-    r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4')# , (800, 600))
-    t=  Thread(target=r.run)
-    t.start()
+        r = Recorder(config.RTSP_STREAM_1, config.RTSP_STREAM_2, f'ue_log/srv_mig_{hms()}.mp4')# , (800, 600))
+        t=  Thread(target=r.run)
+        t.start()
 
     # =================================
     #! 迁移时间计时点2end
@@ -266,8 +266,9 @@ if __name__ =="__main__":
     # switch 窗口
     # sw.switch_window()
 
-    # 允许视频流切换
-    r.trigger_switch()
+    if not config.IN_MEASUREMENT: #! overhead测量的时候，不进行opencv录屏，否则引入额外流量
+        # 允许视频流切换
+        r.trigger_switch()
 
     # =================================
     t2=current_milli_time()
@@ -285,13 +286,15 @@ if __name__ =="__main__":
 
 
     # 运行几秒钟,让trigger部分运行起来
-    wait(5, 'Triggering Switch')
+    wait(3, 'Triggering Switch')
 
     # =================================
     tm3 = current_milli_time()
     # =================================
-    # 获取downtime
-    t = r.get_downtime()
+    
+    if not config.IN_MEASUREMENT: #! overhead测量的时候，不进行opencv录屏，否则引入额外流量
+        # 获取downtime
+        t = r.get_downtime()
     # =================================
     tm3e = current_milli_time()
     # =================================
@@ -327,19 +330,22 @@ if __name__ =="__main__":
     log.info('\n\n\n====================================')
 
    
-    # 切换后运行一段时间
-    wait(10, 'Before Ending')
+    
 
-    # 停止记录
-    r.close()
+    if not config.IN_MEASUREMENT: #! overhead测量的时候，不进行opencv录屏，否则引入额外流量
+        # 切换后运行一段时间
+        wait(10, 'Before Ending')
+        # 停止记录
+        r.close()
 #!##############################################
 #   推流结束, edge 1 退出
 #!##############################################
     #?-----------------------------------
     if config.IN_MEASUREMENT:
-        wait(2, msg='stream end')
+        # wait(2, msg='stream end')
         measure_insert('STREAM_END')
     #?-----------------------------------
+    sw.minetest_f2()  # 保证dn1被kill之后，dn2是有控制权的，不会原地晃动
     end_minetest(1)
 
 
