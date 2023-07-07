@@ -212,7 +212,10 @@ if __name__ =="__main__":
 
 
     # sleep
-    wait(5, 'Streaming Game')
+    if not config.IN_MEASUREMENT: #! overhead测量的时候，不进行opencv录屏，否则引入额外流量
+        wait(3, 'Streaming Game')
+    else:
+        wait(5, 'Streaming Game')
 
 
     # 切换到dn1的窗口，因为dn2后出来，经常覆盖了dn1，造成主窗口在后，副窗口在前
@@ -253,9 +256,9 @@ if __name__ =="__main__":
 
 
 
-
+    if not config.IN_MEASUREMENT: #! overhead测量的时候，不进行opencv录屏，否则引入额外流量
     # 运行几秒钟
-    wait(2, 'Video Recording')
+        wait(2, 'Video Recording')
 
     # =================================
     t1 = current_milli_time()
@@ -284,9 +287,9 @@ if __name__ =="__main__":
 
 
 
-
+    if not config.IN_MEASUREMENT: #! overhead测量的时候，不进行opencv录屏，否则引入额外流量
     # 运行几秒钟,让trigger部分运行起来
-    wait(3, 'Triggering Switch')
+        wait(3, 'Triggering Switch')
 
     # =================================
     tm3 = current_milli_time()
@@ -342,7 +345,7 @@ if __name__ =="__main__":
 #!##############################################
     #?-----------------------------------
     if config.IN_MEASUREMENT:
-        # wait(2, msg='stream end')
+        wait(1, msg='stream end')
         measure_insert('STREAM_END')
     #?-----------------------------------
     sw.minetest_f2()  # 保证dn1被kill之后，dn2是有控制权的，不会原地晃动
