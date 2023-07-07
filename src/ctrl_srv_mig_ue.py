@@ -347,10 +347,13 @@ if __name__ =="__main__":
     if config.IN_MEASUREMENT:
         wait(6, msg='stream end')
         measure_insert('STREAM_END')
+
+        #! 为了实验方便，仅在overhead的实验中会主动关闭dn1上的进程
+        sw.minetest_f2()  # 保证dn1被kill之后，dn2是有控制权的，不会原地晃动
+        sw.switch_window()  # dn2的画面在前方，避免dn1的断网画面出现
+        end_minetest(1)
     #?-----------------------------------
-    sw.minetest_f2()  # 保证dn1被kill之后，dn2是有控制权的，不会原地晃动
-    sw.switch_window()  # dn2的画面在前方，避免dn1的断网画面出现
-    end_minetest(1)
+
 
 
 
