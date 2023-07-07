@@ -319,7 +319,7 @@ if __name__ =="__main__":
     t_down = t
     # t_down = t +  t2-t1
     # t_down = [t, t2-t1]
-    #        连接bs启动游戏    双stream准备    允许切换
+    #        连接bs启动游戏    双stream准备    允许切换    读取downtime，实际完成切换
     t_mig = (tm1e - tm1) + (tm2e - tm2) + (t2 - t1) + (tm3e - tm3)
     # t_mig = [(tm1e - tm1), (tm2e - tm2), (t2 - t1), (tm3e - tm3)]
 
@@ -345,7 +345,7 @@ if __name__ =="__main__":
 #!##############################################
     #?-----------------------------------
     if config.IN_MEASUREMENT:
-        wait(1, msg='stream end')
+        wait(6, msg='stream end')
         measure_insert('STREAM_END')
     #?-----------------------------------
     sw.minetest_f2()  # 保证dn1被kill之后，dn2是有控制权的，不会原地晃动
